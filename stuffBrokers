@@ -1,0 +1,127 @@
+#!/usr/bin/env python3
+
+import random
+import numpy as np
+import pandas as pd
+import matplotlib
+print(matplotlib.get_backend())
+# matplotlib.rcParams['backend'] = "Qt4Agg"
+import matplotlib.pyplot as plt
+
+# Sources:
+# http://moneyweek.com/personal-finance/isas/stocks-shares-isa-providers-cost-comparison-table/
+# http://www.moneysavingexpert.com/savings/stocks-shares-isas
+# http://www.moneywise.co.uk/compare-investment-isas
+
+# X-O.co.uk - Execution Only Share Dealing
+# http://www.x-o.co.uk/
+# £5.95 per trade 
+xo = lambda annual_stock_amount: 5.95
+# Hargreaves Lansdown | ISAs, pensions, funds and shares
+# http://www.hl.co.uk/
+# 0.45% per year (max £45 in Isa, max £200
+# in Sipp). £11.95 per trade 
+hl_max_isa_annual_charge=45
+hl = lambda annual_stock_amount: min(0.0045 * annual_stock_amount, hl_max_isa_annual_charge) + 11.95
+# AJ Bell Youinvest | Award-winning investment platform
+# https://www.youinvest.co.uk/
+# https://www.youinvest.co.uk/isa/charges-and-rates
+aj = lambda annual_stock_amount: 9.95
+# Interactive Investor | Shares, funds,ISAs and SIPPs
+# http://www.iii.co.uk/
+# £20 per quarter (includes £20 of trades) 
+# £10 per trade 
+ii = lambda annual_stock_amount: 20 * 4
+# Charles Stanley Direct
+# https://www.charles-stanley-direct.co.uk/
+# https://www.charles-stanley-direct.co.uk/Our_Services/ISA/
+# https://www.charles-stanley-direct.co.uk/Our_Charges/
+# 0.25% per year (min £20 max £150), waived
+# if 6+ trades every six months. £10 per trade 
+csd = lambda annual_stock_amount: min(max(0.0025 * annual_stock_amount, 20), 150) + 10
+# Alliance Trust Savings - Pensions, ISAs, Share Dealing, Funds
+# https://www.alliancetrustsavings.co.uk/
+# £18.75 per quarter £12.50 per trade 
+ats = lambda annual_stock_amount: (18.75 * 4) + 12.50
+# AXA Self Investor 
+# https://www.axaselfinvestor.co.uk/
+# https://www.axaselfinvestor.co.uk/isas-and-more/our-stocks-and-shares-isa/
+# 0.35% per annum of the value of your smart+ ISA, reducing to 0.20%
+# per annum where the total value of your smart+ ISA and smart+
+# Trading Account is £250,000 or more.
+# Buy/sell/switch transaction FREE
+asi = lambda annual_stock_amount: 0.0035 * annual_stock_amount
+# Cavendish Online
+# http://www.cavendishonline.co.uk/
+# http://www.cavendishonline.co.uk/investments/our-service/
+# 2. A platform charge of 0.20%
+# 3. A Cavendish Online Ongoing fee of 0.05%
+co = lambda annual_stock_amount: 0.0025 * annual_stock_amount
+# Halifax Share Dealing
+# http://www.halifax.co.uk/sharedealing/
+# http://www.halifax.co.uk/sharedealing/charges/stocks-and-shares-isa-charges/
+# £12.50 per trade
+# Stocks and Shares ISA admin charge
+# £12.50 per year
+# 0.5% per stock for stamp duty for UK shares???
+hsd = lambda annual_stock_amount: 12.5 + 12.5
+
+
+# dictionary
+broker_dic = {
+  'X-O':xo, 
+  'Hargreaves Lansdown':hl, 
+  'AJ Bell Youinvest':aj, 
+  'Interactive Investor':ii, 
+  'Charles Stanley Direct': csd,
+  'Alliance Trust Savings': ats,
+  'AXA Self Investor': asi,
+  'Cavendish Online': co,
+  'Halifax Share Dealing': hsd,
+}
+
+x_step=500
+x_min = 0
+x_max = 15500 + x_step
+x = np.arange(x_min,x_max,x_step)
+
+# data structure pandas
+x_series = pd.Series(x)
+
+# figure, axis 
+# it contains 1 plot with coordinates: row 1, column 1
+fig, ax = plt.subplots(1,1)
+plt.xticks(rotation=90)
+
+broker_dic_output = {}
+legend_lables = []
+linestyles = ['-', '--', '-.', ':']
+for key in broker_dic.keys():
+  current_formula = broker_dic[key]
+  y_series = x_series.apply(current_formula)
+  broker_dic_output[key] = y_series
+  ax.plot(x_series, y_series, linestyle=random.choice(linestyles))
+  legend_lables.append(key)
+
+  last_index = len(x_series) - 1
+
+  # print the value of a random sample in the list
+  rand_index_1 = random.randrange(0, last_index)
+  text_y_value = str(y_series[rand_index_1])
+  ax.text(x_series[rand_index_1], y_series[rand_index_1], text_y_value)
+
+  # print the last value
+  y_lable = str(y_series[last_index]) + ' ' + key
+  ax.text(x_series[last_index], y_series[last_index], y_lable)
+
+# setup the legend
+ax.set_title('Brokers costs comparisons')
+ax.set_xlabel('Stock amount (£, for 1 year)')
+ax.set_ylabel('Cost (£)')
+ax.set_xticks(x_series, x_step)
+ax.grid(True)
+# ax.legend(legend_lables, loc='center left', bbox_to_anchor=(1, 0.5))
+ax_legend = ax.legend(legend_lables, loc='upper center', bbox_to_anchor=(0.5, -0.2), ncol=3)
+fig.savefig('brokers_costs.png', dpi=300, format='png', bbox_extra_artists=(ax_legend,), bbox_inches='tight')
+
+plt.show()
