@@ -1,13 +1,17 @@
 
-
-sudo apt-get install python-numpy python-scipy python-matplotlib ipython ipython-notebook python-pandas python-sympy python-nose
-
-apt-get purge python-numpy python-scipy python-matplotlib ipython ipython-notebook python-pandas python-sympy python-nose
-
-
-$ pip install --upgrade pip
-
 # Ubuntu installs
+```
+sudo apt-get install python-numpy python-scipy python-matplotlib ipython ipython-notebook python-pandas python-sympy python-nose
+```
+```
+apt-get purge python-numpy python-scipy python-matplotlib ipython ipython-notebook python-pandas python-sympy python-nose
+```
+
+```
+$ pip install --upgrade pip
+```
+
+# Ubuntu uninstalls
 ```
 $ sudo apt-get remove python3-pip; sudo apt-get install python3-pip
 ```
