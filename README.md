@@ -39,3 +39,27 @@ rather than using the default `GTK3Agg` (use `matplotlib.get_backend()` to get t
 # Plots tutorial
 http://www.labri.fr/perso/nrougier/teaching/matplotlib/
 
+
+# Stocks fundamentals
+
+```
+$ sudo pip install pystock-crawler
+```
+
+To get fundamentals
+```
+$ pystock-crawler reports NKE -o out.csv -s 20150101 -e 20161231
+```
+
+
+# List tickers
+
+```
+$ curl -o data/nasdaq_listed.csv ftp://ftp.nasdaqtrader.com/SymbolDirectory/nasdaqlisted.txt
+$ curl -o data/nasdaq_traded.csv ftp://ftp.nasdaqtrader.com/SymbolDirectory/nasdaqtraded.txt
+```
+cfr.: http://www.quantatrisk.com/2015/06/22/get-list-nasdaq-securities-python-csv/
+
+
+
+

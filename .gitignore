@@ -1,3 +1,2 @@
-*.csv
 *.png
-
+.scrapy/
