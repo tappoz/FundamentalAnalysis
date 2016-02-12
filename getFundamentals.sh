@@ -1,14 +1,16 @@
 #!/usr/bin/env bash
 
-pystock-crawler reports TSLA -o data/fundamentals_tsla.csv -s 20100101 -e 20161231
-pystock-crawler reports SQ -o data/fundamentals_sq.csv -s 20100101 -e 20161231
-pystock-crawler reports FIT -o data/fundamentals_fit.csv -s 20100101 -e 20161231
-pystock-crawler reports GOOG -o data/fundamentals_goog.csv -s 20100101 -e 20161231
-pystock-crawler reports GOOGL -o data/fundamentals_googl.csv -s 20100101 -e 20161231
-pystock-crawler reports AMZN -o data/fundamentals_amzn.csv -s 20100101 -e 20161231
-pystock-crawler reports AAPL -o data/fundamentals_aapl.csv -s 20100101 -e 20161231
-pystock-crawler reports NFLX -o data/fundamentals_nflx.csv -s 20100101 -e 20161231
-pystock-crawler reports NKE -o data/fundamentals_nke.csv -s 20100101 -e 20161231
-pystock-crawler reports UA -o data/fundamentals_ua.csv -s 20100101 -e 20161231
-pystock-crawler reports FB -o data/fundamentals_fb.csv -s 20100101 -e 20161231
-pystock-crawler reports TWTR -o data/fundamentals_twtr.csv -s 20100101 -e 20161231
+tickers_clothes=( 'NKE' 'UA' 'ADDYY' 'ADS' 'LULU' )
+tickers_air=( 'EZJ' 'RYN' )
+tickers_social=( 'NFLX' 'FB' 'TWTR' 'ETSY' 'LNKD' )
+tickers_factory=( 'TSLA' 'IMG' 'IFX' 'SIE' )
+tickers_online_retail=( 'AMZN' 'EBAY' 'EBA' 'BABA' )
+tickers_pay=( 'PYPL' '2PP' 'SQ' )
+tickers_it=( 'GOOG' 'GOOGL' 'AAPL' 'TEAM' 'GDDY' )
+tickers_health=( 'FIT' )
+
+for ticker in "${tickers_clothes[@]}" "${tickers_air[@]}" "${tickers_social[@]}" "${tickers_factory[@]}" "${tickers_online_retail[@]}" "${tickers_pay[@]}" "${tickers_it[@]}" "${tickers_health[@]}" 
+do
+  echo "`date +%Y-%m-%d:%H:%M:%S` processing ${ticker}"
+  pystock-crawler reports ${ticker} -o data/fundamentals_${ticker}.csv -s 20060101 -e 20161231 --sort -l data/tickers_${ticker}.log
+done
