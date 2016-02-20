@@ -1,0 +1,40 @@
+#!/usr/bin/env python2
+
+import pandas as pd
+import Quandl
+import stopit
+
+tickers_clothes = [ 'NKE', 'UA', 'ADDYY', 'ADS', 'LULU' ]
+tickers_air = [ 'EZJ', 'RYAAY' ] # Ryanair RYA:LN, RYAAY:US, RYAOF over the counter
+tickers_social = [ 'NFLX', 'FB', 'TWTR', 'ETSY', 'LNKD' ]
+tickers_factory = [ 'TSLA', 'IMG', 'IFX', 'SIE' ]
+tickers_online_retail = [ 'AMZN', 'EBAY', 'EBA', 'BABA' ]
+tickers_pay = [ 'PYPL', '2PP', 'SQ' ]
+tickers_it = [ 'GOOG', 'GOOGL', 'AAPL', 'TEAM', 'GDDY' ]
+tickers_health = [ 'FIT' ]
+
+fundamentals_dir = 'data/fundamentals/'
+
+def merge_lists():
+  all_tickers = list(set(tickers_clothes)|set(tickers_air)|set(tickers_social)|set(tickers_factory)|set(tickers_online_retail)|set(tickers_pay)|set(tickers_it)|set(tickers_health))
+  return all_tickers
+
+def process_tickers(list, function):
+  for ticker in list:
+    function(ticker, timeout=10)
+
+@stopit.threading_timeoutable(default='not finished')
+def outstanding_shares(ticker):
+  database_id = 'RAYMOND'
+  current_request = database_id + '/' + ticker.upper().strip() + '_TOTAL_COMMON_SHARES_OUTSTANDING_Q'
+  outstanding_shares_filename = fundamentals_dir + 'outstanding_shares_' + database_id + '_' + ticker.upper() + '.csv'
+    
+  try:
+    print 'Processing ticker ' + ticker
+    current_dataframe = Quandl.get(current_request)
+    current_dataframe.to_csv(outstanding_shares_filename)
+  except Exception, e:
+    print '~~~ Failed ticker: ' + ticker + ' ~~~', str(e)
+
+
+process_tickers(merge_lists(),outstanding_shares)

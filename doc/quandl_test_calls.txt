@@ -1,0 +1,29 @@
+http://help.quandl.com/article/68-is-there-a-rate-limit-or-speed-limit-for-api-usage
+
+eps
+https://www.quandl.com/api/v3/datasets/ZFB/TSLA_EPS_BASIC_CONT_OPER_Q.csv?start_date=1970-01-01&end_date=1970-01-01
+https://www.quandl.com/api/v3/datasets/ZFA/TSLA_EPS_BASIC_CONSOL_Q.csv?start_date=1970-01-01&end_date=1970-01-01
+https://www.quandl.com/api/v3/datasets/ZFA/TSLA_BASIC_NET_EPS_Q.csv?start_date=1970-01-01&end_date=1970-01-01
+
+https://www.quandl.com/api/v3/datasets/ZFA/AAPL_EPS_BASIC_CONSOL_Q.csv?start_date=1970-01-01&end_date=1970-01-01
+https://www.quandl.com/api/v3/datasets/ZFB/AAPL_EPS_DILUTED_NET_Q.csv?start_date=1970-01-01&end_date=1970-01-01
+
+
+net revenue
+https://www.quandl.com/api/v1/datasets/SEC/AAPL_SALESREVENUENET_Q.csv
+
+
+total number of outstanding shares
+https://www.quandl.com/data/SEC/TSLA_WEIGHTEDAVERAGENUMBEROFSHARESOUTSTANDINGBASICANDDILUTEDONE_Q-TESLA-MOTORS-INC-TSLA-Quarterly-Weighted-Average-Number-Of-Shares-Outstanding-Basic-And-Diluted-One
+https://www.quandl.com/data/RAYMOND/TSLA_TOTAL_COMMON_SHARES_OUTSTANDING_Q
+https://www.quandl.com/data/ZFA/TSLA_WAVG_SHARES_OUT_Q
+
+
+
+Stock Fundamental Indicators From the SEC
+
+https://www.quandl.com/data/RAYMOND/documentation/documentation
+https://www.quandl.com/blog/api-for-stock-data#SEC-Indicators-Legend
+
+https://www.quandl.com/data/SF1/documentation/indicators
+
