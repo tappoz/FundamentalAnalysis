@@ -60,6 +60,3 @@ $ curl -o data/nasdaq_traded.csv ftp://ftp.nasdaqtrader.com/SymbolDirectory/nasd
 ```
 cfr.: http://www.quantatrisk.com/2015/06/22/get-list-nasdaq-securities-python-csv/
 
-
-
-
