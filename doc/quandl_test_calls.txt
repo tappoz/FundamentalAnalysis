@@ -27,3 +27,9 @@ https://www.quandl.com/blog/api-for-stock-data#SEC-Indicators-Legend
 
 https://www.quandl.com/data/SF1/documentation/indicators
 
+
+London Stock Exchange
+https://www.quandl.com/api/v3/datasets/RB1/2433_SIGNALS.csv?start_date=1970-01-01&end_date=1970-01-01
+https://www.quandl.com/api/v3/datasets/RB1/2433_VALUES.csv?start_date=1970-01-01&end_date=1970-01-01
+Financial Services Authority (FSA) until April 2013 - then Financial Conduct Authority (FCA) and Prudential Regulation Authority (PRA)
+
