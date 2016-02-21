@@ -1,0 +1,95 @@
+#!/usr/bin/env python2
+
+import fnmatch, re
+import os
+import pandas as pd
+import datetime
+
+fundamentals_dir = 'data/fundamentals/'
+ratios_dir = 'data/calculated_ratios/'
+
+# ----------------
+# HELPER FUNCTIONS
+# ----------------
+
+def build_outstanding_shares_dict(files_dir):
+  raymond_database_id = 'RAYMOND'
+  filename_glob = 'outstanding_shares_' + raymond_database_id + '_*.csv'
+  filename_regex = raymond_database_id + '_(.*).csv'
+  outstanding_shares_pattern = re.compile(filename_regex)
+  outstanding_shares_dict = {}
+  for file_name in os.listdir(files_dir):
+    if fnmatch.fnmatch(file_name, filename_glob):
+      current_ticker = outstanding_shares_pattern.search(file_name).group(1)
+      # print 'Processing file:', file_name
+      # print 'Processing ticker:', current_ticker
+      outstanding_shares_dict[current_ticker] = pd.read_csv(files_dir + file_name)
+
+  return outstanding_shares_dict
+
+def build_fundamentals_data_dict(files_dir, tickers):
+  fundamentals_dict = {}
+  for ticker in tickers:
+    fundamentals_ticker_filename_and_path = files_dir + 'fundamentals_' + ticker + '.csv'
+    # print fundamentals_ticker_filename_and_path
+    fundamentals_dict[ticker] = pd.read_csv(fundamentals_ticker_filename_and_path)
+
+  return fundamentals_dict
+
+def build_eps_dataframe(outstanding_shares_df, fundamentals_df):
+  # fundamentals column names
+  FUDAMENTALS_END_DATE = 'end_date'
+  FUDAMENTALS_NET_INCOME = 'net_income'
+  FUDAMENTALS_DIVIDEND = 'dividend'
+  # outstanding shares dataframe details
+  DATE_FIELD = 'Date'
+  DATE_FORMAT = '%Y-%m-%d'
+  VALUE_FIELD = 'Value'
+  current_os_df = pd.DataFrame()
+  current_os_df = pd.to_datetime(outstanding_shares_df[DATE_FIELD])
+  # EPS dataframe
+  EPS_FIELD = 'EPS'
+  eps_df = pd.DataFrame(columns=[DATE_FIELD,EPS_FIELD])
+  for index_f_df,rows in fundamentals_df.iterrows():
+    # fundamentals details
+    EPS_CURRENT_DATE = rows[FUDAMENTALS_END_DATE]
+    EPS_NET_INCOME = rows[FUDAMENTALS_NET_INCOME]
+    EPS_DIVIDEND = rows[FUDAMENTALS_DIVIDEND]
+    # outstanding shares details
+    most_updated_os_date = current_os_df.loc[current_os_df <= rows[FUDAMENTALS_END_DATE]].max()
+    most_updated_outstanding_shares_row = outstanding_shares_df[outstanding_shares_df[DATE_FIELD] == most_updated_os_date.strftime(DATE_FORMAT)]
+    EPS_OUTSTANDING_SHARES = most_updated_outstanding_shares_row[VALUE_FIELD].item()
+    # EPS calculation
+    EPS = (EPS_NET_INCOME - EPS_DIVIDEND) / EPS_OUTSTANDING_SHARES
+    eps_df.loc[index_f_df] = [EPS_CURRENT_DATE,EPS]
+
+  return eps_df
+
+def build_all_eps_dataframes(files_dir, ratios_dir):
+  # making sure the folder exists
+  if not os.path.exists(ratios_dir):
+    os.makedirs(ratios_dir)
+  # collecting the data
+  outstanding_shares_dict = build_outstanding_shares_dict(fundamentals_dir)
+  available_tickers = outstanding_shares_dict.keys()
+  fundamentals_tickers_dict = build_fundamentals_data_dict(fundamentals_dir, available_tickers)
+  # looping on the tickers
+  for ticker in available_tickers:
+    print str(datetime.datetime.now()) + ' Processing ticker:',ticker
+    current_eps_df = build_eps_dataframe(outstanding_shares_dict[ticker], fundamentals_tickers_dict[ticker])
+    # saving the EPS df as CSV file
+    current_filename_with_path = ratios_dir + 'eps_' + ticker.upper() + '.csv'
+    current_eps_df.to_csv(current_filename_with_path, index=False)
+
+# ----------
+# PROCESSING
+# ----------
+
+# outstanding_shares_dict = build_outstanding_shares_dict(fundamentals_dir)
+# print 'These tickers have "outstanding shares" historical data:', outstanding_shares_dict.keys()
+# fundamentals_tickers_dict = build_fundamentals_data_dict(fundamentals_dir, outstanding_shares_dict.keys())
+# print 'These ticker have fundamentals information:', fundamentals_tickers_dict.keys()
+# tsla_eps_df = build_eps_dataframe(outstanding_shares_dict['TSLA'], fundamentals_tickers_dict['TSLA'])
+# print 'TSLA EPS:', tsla_eps_df
+
+build_all_eps_dataframes(fundamentals_dir, ratios_dir)
