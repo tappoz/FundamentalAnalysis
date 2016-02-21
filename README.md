@@ -83,4 +83,4 @@ $ sudo pip2 install Quandl
 
 $ sudo pip2 install stopit
 
-
+$ sudo pip2 install pandas-datareader

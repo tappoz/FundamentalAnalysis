@@ -1,0 +1,62 @@
+#!/usr/bin/env python2
+
+import pandas_datareader.data as web
+import datetime as dt
+from dateutil.relativedelta import relativedelta
+import os
+import time
+
+tickers_clothes = [ 'NKE', 'UA', 'ADDYY', 'ADS', 'LULU' ]
+tickers_air = [ 'EZJ', 'RYAAY' ] # Ryanair RYA:LN, RYAAY:US, RYAOF over the counter
+tickers_social = [ 'NFLX', 'FB', 'TWTR', 'ETSY', 'LNKD' ]
+tickers_factory = [ 'TSLA', 'IMG', 'IFX', 'SIE' ]
+tickers_online_retail = [ 'AMZN', 'EBAY', 'EBA', 'BABA' ]
+tickers_pay = [ 'PYPL', '2PP', 'SQ' ]
+tickers_it = [ 'GOOG', 'GOOGL', 'AAPL', 'TEAM', 'GDDY' ]
+tickers_health = [ 'FIT' ]
+
+stock_prices_dir = 'data/stock_prices/'
+if not os.path.exists(stock_prices_dir):
+    os.makedirs(stock_prices_dir)
+
+def merge_lists():
+  all_tickers = list(set(tickers_clothes)|set(tickers_air)|set(tickers_social)|set(tickers_factory)|set(tickers_online_retail)|set(tickers_pay)|set(tickers_it)|set(tickers_health))
+  return all_tickers
+
+def get_before_2016_02(tickers, store_dir):
+  start = dt.date(2009,1,1)
+  end = dt.date(2016,1,31)
+  CLOSE_FIELD = 'Close'
+  for ticker in tickers:
+    stock_price_filename = store_dir + 'close_prices_pre_2016_02_' + ticker.upper() + '.csv'
+    print 'Saving to' + stock_price_filename
+    time.sleep(1)
+    try:
+      ticker_df = web.DataReader(ticker, 'google', start, end)
+      # drop rows with at least 1 NaN 
+      df_to_save = ticker_df[[CLOSE_FIELD]].dropna(thresh=1)
+      df_to_save.to_csv(stock_price_filename)
+    except Exception, e:
+      print 'Failed ticker: ' + ticker + ' ~~~', str(e)
+
+
+def get_after_2016_02(tickers, store_dir):
+  # start = now + relativedelta(months=-1)
+  start = dt.date(2016,2,1)
+  end = dt.date.today()
+  CLOSE_FIELD = 'Close'
+  for ticker in tickers:
+    stock_price_filename = store_dir + 'close_prices_post_2016_02_' + ticker.upper() + '.csv'
+    print 'Saving to' + stock_price_filename
+    time.sleep(1)
+    try:
+      ticker_df = web.DataReader(ticker, 'google', start, end)
+      # drop rows with at least 1 NaN 
+      df_to_save = ticker_df[[CLOSE_FIELD]].dropna(thresh=1)
+      df_to_save.to_csv(stock_price_filename)
+    except Exception, e:
+      print 'Failed ticker: ' + ticker + ' ~~~', str(e)
+
+
+get_before_2016_02(merge_lists(),stock_prices_dir)
+get_after_2016_02(merge_lists(),stock_prices_dir)
