@@ -1,0 +1,59 @@
+#!/usr/bin/env python2
+
+import pandas as pd
+import numpy as np
+import datetime as dt
+from dateutil.relativedelta import relativedelta
+
+tickers_clothes = [ 'NKE', 'UA', 'ADDYY', 'ADS', 'LULU' ]
+tickers_air = [ 'EZJ', 'RYAAY' ] # Ryanair RYA:LN, RYAAY:US, RYAOF over the counter
+tickers_social = [ 'NFLX', 'FB', 'TWTR', 'ETSY', 'LNKD' ]
+tickers_factory = [ 'TSLA', 'IMG', 'IFX', 'SIE' ]
+tickers_online_retail = [ 'AMZN', 'EBAY', 'EBA', 'BABA' ]
+tickers_pay = [ 'PYPL', '2PP', 'SQ' ]
+tickers_it = [ 'GOOG', 'GOOGL', 'AAPL', 'TEAM', 'GDDY' ]
+tickers_health = [ 'FIT' ]
+
+def merge_lists():
+  all_tickers = list(set(tickers_clothes)|set(tickers_air)|set(tickers_social)|set(tickers_factory)|set(tickers_online_retail)|set(tickers_pay)|set(tickers_it)|set(tickers_health))
+  return all_tickers
+
+stock_prices_dir = 'data/stock_prices/'
+ratios_dir = 'data/calculated_ratios/'
+
+
+def pe_calculations(stock_prices_dir, ratios_dir, tickers):
+  for ticker in tickers:
+    print 'Processing ticker:',ticker
+    stock_price_filename_pre = stock_prices_dir + 'close_prices_pre_2016_02_' + ticker.upper() + '.csv'
+    stock_price_filename_post = stock_prices_dir + 'close_prices_post_2016_02_' + ticker.upper() + '.csv'
+    eps_filename = ratios_dir + 'eps_' + ticker.upper() + '.csv'
+    DATE_FIELD = 'Date'
+    try:
+      # load the EPS data
+      eps_df = pd.read_csv(eps_filename)#, index_col = 'Date', parse_dates = True)
+      # print len(eps_df)
+
+      # load the stock price data
+      stock_price_pre_df = pd.read_csv(stock_price_filename_pre)#, index_col = 'Date', parse_dates = True)
+      stock_price_post_df = pd.read_csv(stock_price_filename_post)#, index_col = 'Date', parse_dates = True)
+      all_stock_prices_df = pd.concat([stock_price_pre_df,stock_price_post_df])
+      # print 'pre ', len(stock_price_pre_df.index), ' post ', len(stock_price_post_df.index), ' tot ', len(all_stock_prices_df.index)
+
+      for date in eps_df[DATE_FIELD]:
+        # print 'Date!', date
+        end = dt.date.today()
+        start = end + relativedelta(months=-2)
+        print all_stock_prices_df.head(2)
+        print 'end', end
+        print 'start', start
+
+        # TODO fix the following...
+        date_range = (all_stock_prices_df[DATE_FIELD] >= start) & (all_stock_prices_df[DATE_FIELD] <= end)
+        last_2_months = all_stock_prices_df.loc[date_range]
+        print last_2_months
+    except Exception, e:
+      print 'Failed to load something about ticker: ' + ticker + ' ~~~', str(e)
+
+
+pe_calculations(stock_prices_dir,ratios_dir,merge_lists())
