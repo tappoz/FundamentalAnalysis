@@ -4,6 +4,7 @@ import pandas as pd
 import numpy as np
 import datetime as dt
 from dateutil.relativedelta import relativedelta
+from dateutil.parser import parse
 
 tickers_clothes = [ 'NKE', 'UA', 'ADDYY', 'ADS', 'LULU' ]
 tickers_air = [ 'EZJ', 'RYAAY' ] # Ryanair RYA:LN, RYAAY:US, RYAOF over the counter
@@ -21,10 +22,23 @@ def merge_lists():
 stock_prices_dir = 'data/stock_prices/'
 ratios_dir = 'data/calculated_ratios/'
 
+DATE_FIELD = 'Date'
+DATE_FORMAT = '%Y-%m-%d'
+
+def stock_prices_median(date, stock_prices_df):
+  # print 'date?', date
+  end = parse(date)
+  start = end + relativedelta(months=-2)
+  # print 'end', end
+  # print 'start', start
+  date_range = (stock_prices_df[DATE_FIELD] >= start.strftime(DATE_FORMAT)) & (stock_prices_df[DATE_FIELD] <= end.strftime(DATE_FORMAT))
+  last_2_months = stock_prices_df[date_range]
+  # print 'range size?', last_2_months['Close'].count()
+  median = last_2_months['Close'].median()
+  # print 'median?', median
+  return median
 
 def pe_calculations(stock_prices_dir, ratios_dir, tickers):
-  DATE_FIELD = 'Date'
-  DATE_FORMAT = '%Y-%m-%d'
   for ticker in tickers:
     print 'Processing ticker:',ticker
     stock_price_filename_pre = stock_prices_dir + 'close_prices_pre_2016_02_' + ticker.upper() + '.csv'
@@ -41,17 +55,11 @@ def pe_calculations(stock_prices_dir, ratios_dir, tickers):
       all_stock_prices_df = pd.concat([stock_price_pre_df,stock_price_post_df])
 
       for date in eps_df[DATE_FIELD]:
-        # print 'Date!', date
-        end = dt.date.today()
-        start = end + relativedelta(months=-2)
-        print all_stock_prices_df.head(2)
-        print 'end', end
-        print 'start', start
-
-        date_range = (all_stock_prices_df[DATE_FIELD] >= start.strftime(DATE_FORMAT)) & (all_stock_prices_df[DATE_FIELD] <= end.strftime(DATE_FORMAT))
-        last_2_months = all_stock_prices_df[date_range]
-        # print last_2_months
-        # TODO go on with the MEDIA and the P/E computation...
+        stocks_median = stock_prices_median(date, all_stock_prices_df)
+        current_eps = eps_df[eps_df[DATE_FIELD] == date]['EPS'].iloc[0]
+        # print 'Current EPS', current_eps
+        current_pe = stocks_median / current_eps
+        print 'P/E ratio:', current_pe
     except Exception, e:
       print 'Failed to load something about ticker: ' + ticker + ' ~~~', str(e)
 
