@@ -23,22 +23,22 @@ ratios_dir = 'data/calculated_ratios/'
 
 
 def pe_calculations(stock_prices_dir, ratios_dir, tickers):
+  DATE_FIELD = 'Date'
+  DATE_FORMAT = '%Y-%m-%d'
   for ticker in tickers:
     print 'Processing ticker:',ticker
     stock_price_filename_pre = stock_prices_dir + 'close_prices_pre_2016_02_' + ticker.upper() + '.csv'
     stock_price_filename_post = stock_prices_dir + 'close_prices_post_2016_02_' + ticker.upper() + '.csv'
     eps_filename = ratios_dir + 'eps_' + ticker.upper() + '.csv'
-    DATE_FIELD = 'Date'
     try:
       # load the EPS data
-      eps_df = pd.read_csv(eps_filename)#, index_col = 'Date', parse_dates = True)
+      eps_df = pd.read_csv(eps_filename)
       # print len(eps_df)
 
       # load the stock price data
-      stock_price_pre_df = pd.read_csv(stock_price_filename_pre)#, index_col = 'Date', parse_dates = True)
-      stock_price_post_df = pd.read_csv(stock_price_filename_post)#, index_col = 'Date', parse_dates = True)
+      stock_price_pre_df = pd.read_csv(stock_price_filename_pre)
+      stock_price_post_df = pd.read_csv(stock_price_filename_post)
       all_stock_prices_df = pd.concat([stock_price_pre_df,stock_price_post_df])
-      # print 'pre ', len(stock_price_pre_df.index), ' post ', len(stock_price_post_df.index), ' tot ', len(all_stock_prices_df.index)
 
       for date in eps_df[DATE_FIELD]:
         # print 'Date!', date
@@ -48,10 +48,10 @@ def pe_calculations(stock_prices_dir, ratios_dir, tickers):
         print 'end', end
         print 'start', start
 
-        # TODO fix the following...
-        date_range = (all_stock_prices_df[DATE_FIELD] >= start) & (all_stock_prices_df[DATE_FIELD] <= end)
-        last_2_months = all_stock_prices_df.loc[date_range]
-        print last_2_months
+        date_range = (all_stock_prices_df[DATE_FIELD] >= start.strftime(DATE_FORMAT)) & (all_stock_prices_df[DATE_FIELD] <= end.strftime(DATE_FORMAT))
+        last_2_months = all_stock_prices_df[date_range]
+        # print last_2_months
+        # TODO go on with the MEDIA and the P/E computation...
     except Exception, e:
       print 'Failed to load something about ticker: ' + ticker + ' ~~~', str(e)
 
