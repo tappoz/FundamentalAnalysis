@@ -32,6 +32,7 @@ def outstanding_shares(ticker):
   try:
     print 'Processing ticker ' + ticker
     current_dataframe = Quandl.get(current_request)
+    # the DataFrame seems already sorted by Date
     current_dataframe.to_csv(outstanding_shares_filename)
   except Exception, e:
     print '~~~ Failed ticker: ' + ticker + ' ~~~', str(e)

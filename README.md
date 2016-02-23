@@ -79,6 +79,8 @@ sudo pip2 install git+git://github.com/humdings/yahoo_pynance.git
 git clone https://github.com/humdings/yahoo_pynance.git
 
 $ sudo pip2 install quandlpy
+
+pip2 install requests
 $ sudo pip2 install Quandl
 
 $ sudo pip2 install stopit
