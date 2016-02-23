@@ -1,0 +1,39 @@
+#!/usr/bin/env python2
+
+import fnmatch, re
+import os
+import pandas as pd
+
+
+calculated_ratios_dir = 'data/calculated_ratios/'
+fundamentals_dir = 'data/fundamentals/'
+
+def get_ticker_fundamentals(ticker):
+  file_name = 'fundamentals_' + ticker.upper() + '.csv'
+  fundamentals_df = pd.read_csv(fundamentals_dir + file_name)
+  # print file_name, len(fundamentals_df)
+  # print fundamentals_df.dtypes
+  fundamentals_df
+
+def process_pe_ratios(files_dir):
+  END_DATE_COLUMN = 'end_date'
+  filename_glob = 'pe_median_*.csv'
+  filename_regex = 'pe_median_(.*).csv'
+  fundamentals_pattern = re.compile(filename_regex)
+  for file_name in os.listdir(files_dir):
+    if fnmatch.fnmatch(file_name, filename_glob):
+      current_ticker = fundamentals_pattern.search(file_name).group(1)
+      print 'Processing P/E file:', file_name, 'for ticker', current_ticker
+      current_ticker_fundamentals_df = get_ticker_fundamentals(current_ticker)
+      current_ticker_pe_median_df = pd.read_csv(files_dir + file_name)
+      print current_ticker_pe_median_df.dtypes
+      for index_df,pe_row in current_ticker_pe_median_df.iterrows():
+        print index_df, pe_row['Date']
+        print len(current_ticker_fundamentals_df)
+        # TODO get the closest record according to input date 
+        # (P/E date, 1 year before, to calculate annual EPS)
+        # i_closest = current_ticker_fundamentals_df.index.searchsorted(pe_row['Date'])
+        # current_ticker_fundamentals_df.ix[current_ticker_fundamentals_df.index[i]]
+
+
+process_pe_ratios(calculated_ratios_dir)
