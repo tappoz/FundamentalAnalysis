@@ -54,12 +54,21 @@ def pe_calculations(stock_prices_dir, ratios_dir, tickers):
       stock_price_post_df = pd.read_csv(stock_price_filename_post)
       all_stock_prices_df = pd.concat([stock_price_pre_df,stock_price_post_df])
 
+      PE_MEDIAN_FIELD = 'PE_median'
+      pe_median_df = pd.DataFrame(columns=[DATE_FIELD,PE_MEDIAN_FIELD])
       for date in eps_df[DATE_FIELD]:
         stocks_median = stock_prices_median(date, all_stock_prices_df)
         current_eps = eps_df[eps_df[DATE_FIELD] == date]['EPS'].iloc[0]
         # print 'Current EPS', current_eps
         current_pe = stocks_median / current_eps
-        print 'P/E ratio:', current_pe
+        # print 'P/E ratio:', current_pe
+        pe_median_df.loc[len(pe_median_df)] = [date,current_pe]
+
+      # store the P/E median (last 2 months) dataframe
+      # print pe_median_df
+      current_filename_with_path = ratios_dir + 'pe_median_' + ticker.upper() + '.csv'
+      pe_median_df.to_csv(current_filename_with_path, index=False)
+
     except Exception, e:
       print 'Failed to load something about ticker: ' + ticker + ' ~~~', str(e)
 
