@@ -8,15 +8,17 @@ import pandas as pd
 calculated_ratios_dir = 'data/calculated_ratios/'
 fundamentals_dir = 'data/fundamentals/'
 
+DATE_FORMAT = '%Y-%m-%d'
+PE_DATE_COLUMN_NAME = 'Date'
+FUNDAMENTALS_DATE_COLUMN_NAME = 'end_date'
+csv_column_dateparse = lambda x: pd.datetime.strptime(x, DATE_FORMAT)
+
 def get_ticker_fundamentals(ticker):
-  file_name = 'fundamentals_' + ticker.upper() + '.csv'
-  fundamentals_df = pd.read_csv(fundamentals_dir + file_name)
-  # print file_name, len(fundamentals_df)
-  # print fundamentals_df.dtypes
-  fundamentals_df
+  file_name_fundamentals = 'fundamentals_' + ticker.upper() + '.csv'
+  fundamentals_df = pd.read_csv(fundamentals_dir + file_name_fundamentals, parse_dates=[FUNDAMENTALS_DATE_COLUMN_NAME], date_parser=csv_column_dateparse)
+  return fundamentals_df
 
 def process_pe_ratios(files_dir):
-  END_DATE_COLUMN = 'end_date'
   filename_glob = 'pe_median_*.csv'
   filename_regex = 'pe_median_(.*).csv'
   fundamentals_pattern = re.compile(filename_regex)
@@ -25,15 +27,17 @@ def process_pe_ratios(files_dir):
       current_ticker = fundamentals_pattern.search(file_name).group(1)
       print 'Processing P/E file:', file_name, 'for ticker', current_ticker
       current_ticker_fundamentals_df = get_ticker_fundamentals(current_ticker)
-      current_ticker_pe_median_df = pd.read_csv(files_dir + file_name)
-      print current_ticker_pe_median_df.dtypes
+      current_ticker_pe_median_df = pd.read_csv(files_dir + file_name, parse_dates=[PE_DATE_COLUMN_NAME], date_parser=csv_column_dateparse)
+      
       for index_df,pe_row in current_ticker_pe_median_df.iterrows():
-        print index_df, pe_row['Date']
-        print len(current_ticker_fundamentals_df)
-        # TODO get the closest record according to input date 
-        # (P/E date, 1 year before, to calculate annual EPS)
-        # i_closest = current_ticker_fundamentals_df.index.searchsorted(pe_row['Date'])
-        # current_ticker_fundamentals_df.ix[current_ticker_fundamentals_df.index[i]]
+        # TODO map this PE date back to 1 year before
+        print 'Searching in fundamentals for closest date to the P/E date:', pe_row[PE_DATE_COLUMN_NAME]
+        index_closest_in_fundamentals = current_ticker_fundamentals_df[FUNDAMENTALS_DATE_COLUMN_NAME].searchsorted(pe_row[PE_DATE_COLUMN_NAME])
+        closest_date_from_fundamentals = current_ticker_fundamentals_df[FUNDAMENTALS_DATE_COLUMN_NAME].iloc[index_closest_in_fundamentals]
+        print 'Which index?', index_closest_in_fundamentals
+        print 'Which date in fundamentals?',closest_date_from_fundamentals
+
+        # TODO calculate delta growth from earnings in fundamentals from the 2 previously found dates in fundamentals
 
 
 process_pe_ratios(calculated_ratios_dir)
