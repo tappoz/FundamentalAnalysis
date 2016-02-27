@@ -7,42 +7,61 @@ from dateutil.relativedelta import relativedelta
 
 
 calculated_ratios_dir = 'data/calculated_ratios/'
-fundamentals_dir = 'data/fundamentals/'
 
 DATE_FORMAT = '%Y-%m-%d'
 PE_DATE_COLUMN_NAME = 'Date'
-FUNDAMENTALS_DATE_COLUMN_NAME = 'end_date'
+EPS_DATE_COLUMN_NAME = 'Date'
 csv_column_dateparse = lambda x: pd.datetime.strptime(x, DATE_FORMAT)
 
-def get_ticker_fundamentals(ticker):
-  file_name_fundamentals = 'fundamentals_' + ticker.upper() + '.csv'
-  fundamentals_df = pd.read_csv(fundamentals_dir + file_name_fundamentals, parse_dates=[FUNDAMENTALS_DATE_COLUMN_NAME], date_parser=csv_column_dateparse)
-  return fundamentals_df
+def get_ticker_eps(ticker):
+  file_name_eps = 'eps_' + ticker.upper() + '.csv'
+  eps_df = pd.read_csv(calculated_ratios_dir + file_name_eps, parse_dates=[EPS_DATE_COLUMN_NAME], date_parser=csv_column_dateparse)
+  return eps_df
+
+def calculate_peg_series(eps_df, pe_df):
+  peg_df = pd.DataFrame(columns=['Date','PEG'])
+  for index_pe_df,pe_row in pe_df.iterrows():
+    # finding relevant dates for the calculation
+    current_pe_date = pe_row[PE_DATE_COLUMN_NAME]
+    index_closest_current_eps = eps_df[EPS_DATE_COLUMN_NAME].searchsorted(current_pe_date)
+    one_quarter_before_pe_date = current_pe_date + relativedelta(months=-3)
+    index_closest_one_quarter_before_eps = eps_df[EPS_DATE_COLUMN_NAME].searchsorted(one_quarter_before_pe_date)
+
+    # getting the data according to the just found indexes
+    row_current_eps = eps_df.loc[index_closest_current_eps]
+    row_one_quarter_before_eps = eps_df.loc[index_closest_one_quarter_before_eps]
+    eps_current = row_current_eps['EPS'].item()
+    eps_one_quarter_before = row_one_quarter_before_eps['EPS'].item()
+
+    # calculating the PEG
+    eps_growth_rate = (eps_current - eps_one_quarter_before)
+    if (eps_growth_rate != 0):
+      current_peg = pe_row['PE_median'] / eps_growth_rate
+      # storing the PEG in the DataFrame
+      peg_df.loc[index_pe_df] = [current_pe_date,current_peg]
+    else:
+      # TODO something about 0 deltas?
+      current_peg = float('NaN')
+      print 'No PEG to save as the delta is 0'
+    
+  return peg_df
 
 def process_pe_ratios(files_dir):
   filename_glob = 'pe_median_*.csv'
   filename_regex = 'pe_median_(.*).csv'
-  fundamentals_pattern = re.compile(filename_regex)
+  pe_median_pattern = re.compile(filename_regex)
   for file_name in os.listdir(files_dir):
     if fnmatch.fnmatch(file_name, filename_glob):
-      current_ticker = fundamentals_pattern.search(file_name).group(1)
+      current_ticker = pe_median_pattern.search(file_name).group(1)
       print 'Processing P/E file:', file_name, 'for ticker', current_ticker
-      current_ticker_fundamentals_df = get_ticker_fundamentals(current_ticker)
+      current_ticker_eps_df = get_ticker_eps(current_ticker)
       current_ticker_pe_median_df = pd.read_csv(files_dir + file_name, parse_dates=[PE_DATE_COLUMN_NAME], date_parser=csv_column_dateparse)
       
-      for index_pe_df,pe_row in current_ticker_pe_median_df.iterrows():
-        current_pe_date = pe_row[PE_DATE_COLUMN_NAME]
-        print 'Current P/E date:', current_pe_date
-        one_quarter_before_pe_date = current_pe_date + relativedelta(months=-3)
-        print 'One quarter before P/E date:', one_quarter_before_pe_date
-        index_closest_in_fundamentals = current_ticker_fundamentals_df[FUNDAMENTALS_DATE_COLUMN_NAME].searchsorted(one_quarter_before_pe_date)
-        closest_date_from_fundamentals = current_ticker_fundamentals_df[FUNDAMENTALS_DATE_COLUMN_NAME].iloc[index_closest_in_fundamentals]
-        print 'Which index for fundamentals one quarter before?', index_closest_in_fundamentals, 'for current date in PE median index', index_pe_df
-        print 'Which date in fundamentals?',closest_date_from_fundamentals
+      peg_df = calculate_peg_series(current_ticker_eps_df, current_ticker_pe_median_df)
+      
+      current_filename_with_path = calculated_ratios_dir + 'peg_' + current_ticker.upper() + '.csv'
+      print 'Saving PEG series to:', current_filename_with_path
+      peg_df.to_csv(current_filename_with_path, index=False)
 
-        # TODO move from fundamentals CSV to EPS calculated ratios CSV...
-        # TODO calculate delta growth from earnings in fundamentals from the 2 previous dates in EPS
-        # TODO calculate PEG as (PE ratios / delta EPS)
-        # TODO store the PEG series in a CSV file
 
 process_pe_ratios(calculated_ratios_dir)
