@@ -13,40 +13,67 @@ num_rows_num_cols_tuple = (6,1)
 dates_formatter = '%Y-%m-%d'
 dateparse = lambda x: pd.datetime.strptime(x, dates_formatter)
 
-eps_series = pd.read_csv('./data/calculated_ratios/eps_AAPL.csv', parse_dates=['Date'], date_parser=dateparse)
-ax_eps = plt.subplot2grid(num_rows_num_cols_tuple, (0, 0))
-ax_eps.plot(eps_series['Date'],eps_series['EPS'])
-ax_eps.grid(True)
-ax_eps.yaxis.set_major_locator(mticker.MaxNLocator(nbins='5', prune='upper'))
-plt.ylabel('EPS')
 
-peg_series = pd.read_csv('./data/calculated_ratios/peg_AAPL.csv', parse_dates=['Date'], date_parser=dateparse)
-ax_peg = plt.subplot2grid(num_rows_num_cols_tuple, (1, 0), sharex=ax_eps)
-ax_peg.plot(peg_series['Date'],peg_series['PEG'])
-ax_peg.grid(True)
-ax_peg.yaxis.set_major_locator(mticker.MaxNLocator(nbins='5', prune='upper'))
-plt.ylabel('PEG')
+def build_plot(cur_dict, shared_axis):
+  eps_series = pd.read_csv(cur_dict['file_path'], parse_dates=[cur_dict['date_field_name']], date_parser=dateparse)
+  ax = plt.subplot2grid(num_rows_num_cols_tuple, (cur_dict['row_position'], 0), rowspan=cur_dict['rowspan'])
+  if (shared_axis):
+    ax = plt.subplot2grid(num_rows_num_cols_tuple, (cur_dict['row_position'], 0), rowspan=cur_dict['rowspan'], sharex=shared_axis)
+    print 'Shared axis!'
+  ax.plot(eps_series[cur_dict['date_field_name']],eps_series[cur_dict['value_field_name']])
+  ax.grid(True)
+  ax.yaxis.set_major_locator(mticker.MaxNLocator(nbins='5', prune='upper'))
+  plt.ylabel(cur_dict['y_label'])
+  
+  return ax
 
-pe_series = pd.read_csv('./data/calculated_ratios/pe_median_AAPL.csv', parse_dates=['Date'], date_parser=dateparse)
-ax_pe_median = plt.subplot2grid(num_rows_num_cols_tuple, (2, 0), sharex=ax_eps)
-ax_pe_median.plot(pe_series['Date'],pe_series['PE_median'])
-ax_pe_median.grid(True)
-ax_pe_median.yaxis.set_major_locator(mticker.MaxNLocator(nbins='5', prune='upper'))
-plt.ylabel('P/E median')
+eps_dict = {
+  'file_path'        : './data/calculated_ratios/eps_AAPL.csv', 
+  'date_field_name'  : 'Date', 
+  'value_field_name' : 'EPS', 
+  'y_label'          : 'EPS', 
+  'row_position'     : 0, 
+  'rowspan'          : 1
+}
+peg_dict = {
+  'file_path'        : './data/calculated_ratios/peg_AAPL.csv', 
+  'date_field_name'  : 'Date', 
+  'value_field_name' : 'PEG', 
+  'y_label'          : 'PEG', 
+  'row_position'     : 1, 
+  'rowspan'          : 1
+}
+pe_median_dict = {
+  'file_path'        : './data/calculated_ratios/pe_median_AAPL.csv', 
+  'date_field_name'  : 'Date', 
+  'value_field_name' : 'PE_median', 
+  'y_label'          : 'P/E median', 
+  'row_position'     : 2, 
+  'rowspan'          : 1
+}
 
-outstanding_shares_series = pd.read_csv('./data/fundamentals/outstanding_shares_RAYMOND_AAPL.csv', parse_dates=['Date'], date_parser=dateparse)
-ax_outstanding_shares = plt.subplot2grid(num_rows_num_cols_tuple, (3, 0), sharex=ax_eps)
-ax_outstanding_shares.plot(outstanding_shares_series['Date'],outstanding_shares_series['Value'])
-ax_outstanding_shares.grid(True)
-ax_outstanding_shares.yaxis.set_major_locator(mticker.MaxNLocator(nbins='5', prune='upper'))
-plt.ylabel('Outstanding shares')
- 
-closing_price_series = pd.read_csv('./data/stock_prices/close_prices_pre_2016_02_AAPL.csv', parse_dates=['Date'], date_parser=dateparse)
-ax_closing_price = plt.subplot2grid(num_rows_num_cols_tuple, (4, 0), rowspan=2, sharex=ax_eps)
-ax_closing_price.plot(closing_price_series['Date'],closing_price_series['Close'])
-ax_closing_price.grid(True)
-ax_closing_price.xaxis.set_major_formatter(mdates.DateFormatter(dates_formatter))
-plt.ylabel('Stock closing price')
+outstanding_shares_dict = {
+  'file_path'        : './data/fundamentals/outstanding_shares_RAYMOND_AAPL.csv', 
+  'date_field_name'  : 'Date', 
+  'value_field_name' : 'Value', 
+  'y_label'          : 'Outstanding shares', 
+  'row_position'     : 3, 
+  'rowspan'          : 1
+}
+closing_price_dict = {
+  'file_path'        : './data/stock_prices/close_prices_pre_2016_02_AAPL.csv', 
+  'date_field_name'  : 'Date', 
+  'value_field_name' : 'Close', 
+  'y_label'          : 'Stock closing price', 
+  'row_position'     : 4, 
+  'rowspan'          : 2
+}
+
+ax_eps = build_plot(eps_dict, None)
+ax_peg = build_plot(peg_dict, ax_eps)
+ax_pe_median = build_plot(pe_median_dict, ax_eps)
+ax_outstanding_shares = build_plot(outstanding_shares_dict, ax_eps)
+ax_closing_price = build_plot(closing_price_dict, ax_eps)
 
 plt.xticks(rotation=45)
 plt.setp(ax_eps.get_xticklabels(), visible=False)
