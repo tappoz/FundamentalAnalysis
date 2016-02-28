@@ -2,6 +2,7 @@
 
 import pandas as pd
 import matplotlib.pyplot as plt
+import matplotlib.ticker as mticker
 
 dates_formatter = '%Y-%m-%d'
 dateparse = lambda x: pd.datetime.strptime(x, dates_formatter)
@@ -11,15 +12,43 @@ def get_series_func(ticker):
   eps_from_fundamentals_df = pd.read_csv('./data/fundamentals/fundamentals_'+ticker+'.csv', parse_dates=['end_date'], date_parser=dateparse)[['end_date','eps_basic']]
   return eps_calculated_df, eps_from_fundamentals_df
 
+def plot_axis_with_data(axis, calc_df, fund_df):
+  axis.yaxis.set_major_locator(mticker.MaxNLocator(nbins='5', prune='upper'))
+  axis.plot(calc_df['Date'], calc_df['EPS'], linestyle='--')
+  axis.plot(fund_df['end_date'], fund_df['eps_basic'], linestyle='-')
+  axis.grid(True)
+  # ax_legend = axis.legend(['calc','fund'], loc='best')#loc='upper right', bbox_to_anchor=(1.3, 0.5))
+  ax_legend = axis.legend(['calc','fund'], loc='center right', bbox_to_anchor=(1.15, 0.5))
+
 def build_plot(tickers, series_func):
-  for ticker in tickers:
+  num_rows = len(tickers)
+  shared_ax = None
+  for idx, ticker in enumerate(tickers):
+    print 'idx', idx, 'ticker', ticker
+    ax = None
+    # sharing the x axis among plots
+    if (idx == 0):
+      ax = plt.subplot2grid((num_rows,1), (idx,0))
+      shared_ax = ax
+    else:
+      ax = plt.subplot2grid((num_rows,1), (idx,0), sharex=shared_ax)
+    # hiding the x values from the plot
+    if (idx == num_rows - 1):
+      plt.setp(ax.get_xticklabels(), visible=True)
+    else:
+      plt.setp(ax.get_xticklabels(), visible=False)
+
+    ax.set_ylabel(ticker)
     calc_df, fund_df = series_func(ticker)
-    fig, ax = plt.subplots(1,1)
-    ax.plot(calc_df['Date'], calc_df['EPS'], linestyle='--')
-    ax.plot(fund_df['end_date'], fund_df['eps_basic'], linestyle=':')
-    ax.grid(True)
+    plot_axis_with_data(ax, calc_df, fund_df)
+  
+  # store the plots
+  plt.subplots_adjust(left=.08,right=.88,hspace=0)
+  ticker_fig = plt.gcf() # for "get current figure"
+  ticker_fig.savefig('./graphs/checks_eps.png', dpi=300, format='png')
+  plt.show()
 
-build_plot(['AAPL'],get_series_func)
 
-plt.show()
+build_plot(['AAPL','AMZN','EBAY','GOOG','NFLX','TSLA'],get_series_func)
+
 
