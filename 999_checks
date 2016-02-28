@@ -1,0 +1,25 @@
+#!/usr/bin/env python2
+
+import pandas as pd
+import matplotlib.pyplot as plt
+
+dates_formatter = '%Y-%m-%d'
+dateparse = lambda x: pd.datetime.strptime(x, dates_formatter)
+
+def get_series_func(ticker):
+  eps_calculated_df = pd.read_csv('./data/calculated_ratios/eps_'+ticker+'.csv', parse_dates=['Date'], date_parser=dateparse)
+  eps_from_fundamentals_df = pd.read_csv('./data/fundamentals/fundamentals_'+ticker+'.csv', parse_dates=['end_date'], date_parser=dateparse)[['end_date','eps_basic']]
+  return eps_calculated_df, eps_from_fundamentals_df
+
+def build_plot(tickers, series_func):
+  for ticker in tickers:
+    calc_df, fund_df = series_func(ticker)
+    fig, ax = plt.subplots(1,1)
+    ax.plot(calc_df['Date'], calc_df['EPS'], linestyle='--')
+    ax.plot(fund_df['end_date'], fund_df['eps_basic'], linestyle=':')
+    ax.grid(True)
+
+build_plot(['AAPL'],get_series_func)
+
+plt.show()
+
