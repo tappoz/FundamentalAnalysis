@@ -23,7 +23,7 @@ def load_df(path, ticker, date_field):
     df = pd.read_csv(file_path, parse_dates=[date_field], date_parser=dateparse)
     return df;
 
-def build_plot(cur_dict, ticker, shared_axis):
+def build_plot(cur_dict, ticker, num_rows_num_cols_tuple, shared_axis):
   current_df = load_df(cur_dict['path_prefixes'], ticker, cur_dict['date_field_name'])
   ax = plt.subplot2grid(num_rows_num_cols_tuple, (cur_dict['row_position'], 0), rowspan=cur_dict['rowspan'])
   if (shared_axis):
@@ -87,15 +87,20 @@ series_dicts = {
   'closing_price_data': closing_price_dict
 }
 
-num_rows_num_cols_tuple = (7,1)
+def get_total_graph_rows(dictionaries):
+  available_series = dictionaries.keys()
+  rows_each = map(lambda curr_series: dictionaries[curr_series]['rowspan'], available_series)
+  return reduce(lambda x, y: x+y, rows_each)
 
 def get_plt(dicts, ticker):
+  total_rows = get_total_graph_rows(dicts)
+  num_rows_num_cols_tuple = (total_rows,1)
   plt.suptitle(ticker + ' ticker')  
-  ax_eps                = build_plot(dicts['eps_data'],                ticker, None)
-  ax_peg                = build_plot(dicts['peg_data'],                ticker, ax_eps)
-  ax_pe_median          = build_plot(dicts['pe_median_data'],          ticker, ax_eps)
-  ax_outstanding_shares = build_plot(dicts['outstanding_shares_data'], ticker, ax_eps)
-  ax_closing_price      = build_plot(dicts['closing_price_data'],      ticker, ax_eps)
+  ax_eps                = build_plot(dicts['eps_data'],                ticker, num_rows_num_cols_tuple, None)
+  ax_peg                = build_plot(dicts['peg_data'],                ticker, num_rows_num_cols_tuple, ax_eps)
+  ax_pe_median          = build_plot(dicts['pe_median_data'],          ticker, num_rows_num_cols_tuple, ax_eps)
+  ax_outstanding_shares = build_plot(dicts['outstanding_shares_data'], ticker, num_rows_num_cols_tuple, ax_eps)
+  ax_closing_price      = build_plot(dicts['closing_price_data'],      ticker, num_rows_num_cols_tuple, ax_eps)
 
   plt.xlabel('Date')
   plt.xticks(rotation=45)
