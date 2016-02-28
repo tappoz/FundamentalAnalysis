@@ -32,7 +32,8 @@ def build_plot(cur_dict, ticker, shared_axis):
   ax.plot(current_df[cur_dict['date_field_name']],current_df[cur_dict['value_field_name']])
   ax.grid(True)
   ax.yaxis.set_major_locator(mticker.MaxNLocator(nbins='5', prune='upper'))
-  plt.ylabel(cur_dict['y_label'])
+  plt.ylabel(cur_dict['y_label'], rotation=0)
+  # ax.text(0,0, cur_dict['y_label'], va='top', transform=ax.transAxes)
   
   return ax
 
@@ -57,7 +58,7 @@ pe_median_dict = {
   'path_prefixes'    : './data/calculated_ratios/pe_median_', 
   'date_field_name'  : 'Date', 
   'value_field_name' : 'PE_median', 
-  'y_label'          : 'P/E median', 
+  'y_label'          : 'P/E', 
   'row_position'     : 2, 
   'rowspan'          : 1
 }
@@ -65,7 +66,7 @@ outstanding_shares_dict = {
   'path_prefixes'    : './data/fundamentals/outstanding_shares_RAYMOND_', 
   'date_field_name'  : 'Date', 
   'value_field_name' : 'Value', 
-  'y_label'          : 'Outstanding shares', 
+  'y_label'          : 'Outstanding \n shares', 
   'row_position'     : 3, 
   'rowspan'          : 1
 }
@@ -73,7 +74,7 @@ closing_price_dict = {
   'path_prefixes'    : ['./data/stock_prices/close_prices_pre_2016_02_', './data/stock_prices/close_prices_post_2016_02_'], 
   'date_field_name'  : 'Date', 
   'value_field_name' : 'Close', 
-  'y_label'          : 'Stock closing price', 
+  'y_label'          : 'Stock \n closing price', 
   'row_position'     : 4, 
   'rowspan'          : 3
 }
@@ -102,9 +103,13 @@ def get_plt(dicts, ticker):
   plt.setp(ax_pe_median.get_xticklabels(), visible=False)
   plt.setp(ax_peg.get_xticklabels(), visible=False)
   plt.setp(ax_outstanding_shares.get_xticklabels(), visible=False)
-  plt.subplots_adjust(left=.1,right=.96,top=.94,bottom=.16,hspace=0)
+  plt.subplots_adjust(left=.16,right=.96,top=.94,bottom=.16,hspace=0)
 
+  ticker_fig = plt.gcf() # for "get current figure"
+  ticker_fig.savefig('./graphs/'+ticker+'.png', dpi=300, format='png')
   return plt
 
-aapl_plt = get_plt(dicts, 'AAPL')
-aapl_plt.show()
+ticker = 'AAPL'
+ticker_plt = get_plt(dicts, ticker)
+# ticker_plt.show()
+
