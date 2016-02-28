@@ -1,0 +1,60 @@
+#!/usr/bin/env python2
+
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
+import matplotlib.ticker as mticker
+import pandas as pd
+
+plt.suptitle('AAPL ticker')
+plt.xlabel('Date')
+num_rows_num_cols_tuple = (6,1)
+
+dates_formatter = '%Y-%m-%d'
+dateparse = lambda x: pd.datetime.strptime(x, dates_formatter)
+
+eps_series = pd.read_csv('./data/calculated_ratios/eps_AAPL.csv', parse_dates=['Date'], date_parser=dateparse)
+ax_eps = plt.subplot2grid(num_rows_num_cols_tuple, (0, 0))
+ax_eps.plot(eps_series['Date'],eps_series['EPS'])
+ax_eps.grid(True)
+ax_eps.yaxis.set_major_locator(mticker.MaxNLocator(nbins='5', prune='upper'))
+plt.ylabel('EPS')
+
+peg_series = pd.read_csv('./data/calculated_ratios/peg_AAPL.csv', parse_dates=['Date'], date_parser=dateparse)
+ax_peg = plt.subplot2grid(num_rows_num_cols_tuple, (1, 0), sharex=ax_eps)
+ax_peg.plot(peg_series['Date'],peg_series['PEG'])
+ax_peg.grid(True)
+ax_peg.yaxis.set_major_locator(mticker.MaxNLocator(nbins='5', prune='upper'))
+plt.ylabel('PEG')
+
+pe_series = pd.read_csv('./data/calculated_ratios/pe_median_AAPL.csv', parse_dates=['Date'], date_parser=dateparse)
+ax_pe_median = plt.subplot2grid(num_rows_num_cols_tuple, (2, 0), sharex=ax_eps)
+ax_pe_median.plot(pe_series['Date'],pe_series['PE_median'])
+ax_pe_median.grid(True)
+ax_pe_median.yaxis.set_major_locator(mticker.MaxNLocator(nbins='5', prune='upper'))
+plt.ylabel('P/E median')
+
+outstanding_shares_series = pd.read_csv('./data/fundamentals/outstanding_shares_RAYMOND_AAPL.csv', parse_dates=['Date'], date_parser=dateparse)
+ax_outstanding_shares = plt.subplot2grid(num_rows_num_cols_tuple, (3, 0), sharex=ax_eps)
+ax_outstanding_shares.plot(outstanding_shares_series['Date'],outstanding_shares_series['Value'])
+ax_outstanding_shares.grid(True)
+ax_outstanding_shares.yaxis.set_major_locator(mticker.MaxNLocator(nbins='5', prune='upper'))
+plt.ylabel('Outstanding shares')
+ 
+closing_price_series = pd.read_csv('./data/stock_prices/close_prices_pre_2016_02_AAPL.csv', parse_dates=['Date'], date_parser=dateparse)
+ax_closing_price = plt.subplot2grid(num_rows_num_cols_tuple, (4, 0), rowspan=2, sharex=ax_eps)
+ax_closing_price.plot(closing_price_series['Date'],closing_price_series['Close'])
+ax_closing_price.grid(True)
+ax_closing_price.xaxis.set_major_formatter(mdates.DateFormatter(dates_formatter))
+plt.ylabel('Stock closing price')
+
+plt.xticks(rotation=45)
+plt.setp(ax_eps.get_xticklabels(), visible=False)
+plt.setp(ax_pe_median.get_xticklabels(), visible=False)
+plt.setp(ax_peg.get_xticklabels(), visible=False)
+plt.setp(ax_outstanding_shares.get_xticklabels(), visible=False)
+plt.subplots_adjust(left=.1,right=.96,top=.94,bottom=.16,hspace=0)
+
+
+plt.show()
+
