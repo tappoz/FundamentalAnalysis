@@ -28,7 +28,7 @@ def build_plot(cur_dict, ticker, shared_axis):
   ax = plt.subplot2grid(num_rows_num_cols_tuple, (cur_dict['row_position'], 0), rowspan=cur_dict['rowspan'])
   if (shared_axis):
     ax = plt.subplot2grid(num_rows_num_cols_tuple, (cur_dict['row_position'], 0), rowspan=cur_dict['rowspan'], sharex=shared_axis)
-    print 'Shared axis!'
+    # print 'Shared axis!'
   ax.plot(current_df[cur_dict['date_field_name']],current_df[cur_dict['value_field_name']])
   ax.grid(True)
   ax.yaxis.set_major_locator(mticker.MaxNLocator(nbins='5', prune='upper'))
@@ -79,7 +79,7 @@ closing_price_dict = {
   'rowspan'          : 3
 }
 
-dicts = {
+series_dicts = {
   'eps_data': eps_dict,
   'peg_data': peg_dict,
   'pe_median_data': pe_median_dict,
@@ -109,7 +109,32 @@ def get_plt(dicts, ticker):
   ticker_fig.savefig('./graphs/'+ticker+'.png', dpi=300, format='png')
   return plt
 
-ticker = 'AAPL'
-ticker_plt = get_plt(dicts, ticker)
-# ticker_plt.show()
 
+tickers_clothes = [ 'NKE', 'UA', 'ADDYY', 'ADS', 'LULU' ]
+tickers_air = [ 'EZJ', 'RYAAY' ] # Ryanair RYA:LN, RYAAY:US, RYAOF over the counter
+tickers_social = [ 'NFLX', 'FB', 'TWTR', 'ETSY', 'LNKD' ]
+tickers_factory = [ 'TSLA', 'IMG', 'IFX', 'SIE' ]
+tickers_online_retail = [ 'AMZN', 'EBAY', 'EBA', 'BABA' ]
+tickers_pay = [ 'PYPL', '2PP', 'SQ' ]
+tickers_it = [ 'GOOG', 'GOOGL', 'AAPL', 'TEAM', 'GDDY' ]
+tickers_health = [ 'FIT' ]
+
+def merge_lists():
+  all_tickers = list(set(tickers_clothes)|set(tickers_air)|set(tickers_social)|set(tickers_factory)|set(tickers_online_retail)|set(tickers_pay)|set(tickers_it)|set(tickers_health))
+  return all_tickers
+
+def store_plot(dicts, ticker):
+  ticker_plt = get_plt(dicts, ticker)
+  # ticker_plt.show()
+  ticker_plt.cla() # clears the current axes if you have multiple subplots in the same figure
+  ticker_plt.clf() # clear figure
+
+def store_plots(dicts, tickers):
+  for ticker in tickers:
+    try:
+      print 'Processing ticker:', ticker
+      store_plot(dicts, ticker)
+    except Exception, e:
+      print 'Failed to process ticker: ' + ticker + ' ~~~', str(e)
+
+store_plots(series_dicts, merge_lists())

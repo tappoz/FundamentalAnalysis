@@ -122,6 +122,6 @@ ax.set_xticks(x_series, x_step)
 ax.grid(True)
 # ax.legend(legend_lables, loc='center left', bbox_to_anchor=(1, 0.5))
 ax_legend = ax.legend(legend_lables, loc='upper center', bbox_to_anchor=(0.5, -0.2), ncol=3)
-fig.savefig('brokers_costs.png', dpi=300, format='png', bbox_extra_artists=(ax_legend,), bbox_inches='tight')
+fig.savefig('./grapsh/brokers_costs.png', dpi=300, format='png', bbox_extra_artists=(ax_legend,), bbox_inches='tight')
 
 plt.show()
