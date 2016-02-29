@@ -27,14 +27,15 @@ def get_before_2016_02(tickers, store_dir):
   start = dt.date(2009,1,1)
   end = dt.date(2016,1,31)
   CLOSE_FIELD = 'Close'
+  ADJUSTED_CLOSE_FIELD = 'Adj Close'
   for ticker in tickers:
     stock_price_filename = store_dir + 'close_prices_pre_2016_02_' + ticker.upper() + '.csv'
     print 'Saving to' + stock_price_filename
     time.sleep(1)
     try:
-      ticker_df = web.DataReader(ticker, 'google', start, end)
+      ticker_df = web.DataReader(ticker, 'yahoo', start, end)
       # drop rows with at least 1 NaN 
-      df_to_save = ticker_df[[CLOSE_FIELD]].dropna(thresh=1)
+      df_to_save = ticker_df[[CLOSE_FIELD, ADJUSTED_CLOSE_FIELD]].dropna(thresh=1)
       df_to_save.to_csv(stock_price_filename)
     except Exception, e:
       print 'Failed ticker: ' + ticker + ' ~~~', str(e)
@@ -45,18 +46,19 @@ def get_after_2016_02(tickers, store_dir):
   start = dt.date(2016,2,1)
   end = dt.date.today()
   CLOSE_FIELD = 'Close'
+  ADJUSTED_CLOSE_FIELD = 'Adj Close'
   for ticker in tickers:
     stock_price_filename = store_dir + 'close_prices_post_2016_02_' + ticker.upper() + '.csv'
     print 'Saving to' + stock_price_filename
     time.sleep(1)
     try:
-      ticker_df = web.DataReader(ticker, 'google', start, end)
+      ticker_df = web.DataReader(ticker, 'yahoo', start, end)
       # drop rows with at least 1 NaN 
-      df_to_save = ticker_df[[CLOSE_FIELD]].dropna(thresh=1)
+      df_to_save = ticker_df[[CLOSE_FIELD, ADJUSTED_CLOSE_FIELD]].dropna(thresh=1)
       df_to_save.to_csv(stock_price_filename)
     except Exception, e:
       print 'Failed ticker: ' + ticker + ' ~~~', str(e)
 
 
-get_before_2016_02(merge_lists(),stock_prices_dir)
+# get_before_2016_02(merge_lists(),stock_prices_dir)
 get_after_2016_02(merge_lists(),stock_prices_dir)
