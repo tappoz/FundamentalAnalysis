@@ -15,8 +15,12 @@ tickers_pay = [ 'PYPL', '2PP', 'SQ' ]
 tickers_it = [ 'GOOG', 'GOOGL', 'AAPL', 'TEAM', 'GDDY' ]
 tickers_health = [ 'FIT' ]
 
+# WalMart, Coca-Cola, Genpact, Visa, Boeing, Ford, Goldman Sachs
+tickers_solid=[ 'WMT', 'KO', 'G', 'V', 'BOE', 'F', 'GS' ]
+
 def merge_lists():
-  all_tickers = list(set(tickers_clothes)|set(tickers_air)|set(tickers_social)|set(tickers_factory)|set(tickers_online_retail)|set(tickers_pay)|set(tickers_it)|set(tickers_health))
+  # all_tickers = list(set(tickers_clothes)|set(tickers_air)|set(tickers_social)|set(tickers_factory)|set(tickers_online_retail)|set(tickers_pay)|set(tickers_it)|set(tickers_health))
+  all_tickers = tickers_solid
   return all_tickers
 
 stock_prices_dir = 'data/stock_prices/'
