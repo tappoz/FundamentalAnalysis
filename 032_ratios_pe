@@ -25,16 +25,16 @@ ratios_dir = 'data/calculated_ratios/'
 DATE_FIELD = 'Date'
 DATE_FORMAT = '%Y-%m-%d'
 
-def stock_prices_median(date, stock_prices_df):
+def stock_prices_median(date, stock_prices_df, months_delta):
   # print 'date?', date
   end = parse(date)
-  start = end + relativedelta(months=-2)
+  start = end + relativedelta(months=-months_delta)
   # print 'end', end
   # print 'start', start
   date_range = (stock_prices_df[DATE_FIELD] >= start.strftime(DATE_FORMAT)) & (stock_prices_df[DATE_FIELD] <= end.strftime(DATE_FORMAT))
-  last_2_months = stock_prices_df[date_range]
-  # print 'range size?', last_2_months['Close'].count()
-  median = last_2_months['Close'].median()
+  prices_time_delta = stock_prices_df[date_range]
+  # print 'range size?', prices_time_delta['Adj Close'].count()
+  median = prices_time_delta['Adj Close'].median()
   # print 'median?', median
   return median
 
@@ -56,8 +56,9 @@ def pe_calculations(stock_prices_dir, ratios_dir, tickers):
 
       PE_MEDIAN_FIELD = 'PE_median'
       pe_median_df = pd.DataFrame(columns=[DATE_FIELD,PE_MEDIAN_FIELD])
+      delta_months_for_stocks_median = 3
       for date in eps_df[DATE_FIELD]:
-        stocks_median = stock_prices_median(date, all_stock_prices_df)
+        stocks_median = stock_prices_median(date, all_stock_prices_df, delta_months_for_stocks_median)
         current_eps = eps_df[eps_df[DATE_FIELD] == date]['EPS'].iloc[0]
         # print 'Current EPS', current_eps
         current_pe = stocks_median / current_eps
