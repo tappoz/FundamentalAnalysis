@@ -6,6 +6,8 @@ import matplotlib.dates as mdates
 import matplotlib.ticker as mticker
 import pandas as pd
 
+import modules.config_details as conf_info
+
 dates_formatter = '%Y-%m-%d'
 dateparse = lambda x: pd.datetime.strptime(x, dates_formatter)
 
@@ -63,7 +65,7 @@ pe_median_dict = {
   'rowspan'          : 1
 }
 outstanding_shares_dict = {
-  'path_prefixes'    : './data/fundamentals/outstanding_shares_RAYMOND_', 
+  'path_prefixes'    : conf_info.fundamentals_dir + 'outstanding_shares_RAYMOND_', 
   'date_field_name'  : 'Date', 
   'value_field_name' : 'Value', 
   'y_label'          : 'Outstanding \n shares', 
@@ -71,7 +73,7 @@ outstanding_shares_dict = {
   'rowspan'          : 1
 }
 closing_price_dict = {
-  'path_prefixes'    : ['./data/stock_prices/close_prices_pre_2016_02_', './data/stock_prices/close_prices_post_2016_02_'], 
+  'path_prefixes'    : [conf_info.stock_prices_dir + conf_info.stock_prices_ticker_pre_filename_prefix, conf_info.stock_prices_dir + conf_info.stock_prices_ticker_post_filename_prefix], 
   'date_field_name'  : 'Date', 
   'value_field_name' : 'Adj Close', 
   'y_label'          : 'Stock \n closing price', 

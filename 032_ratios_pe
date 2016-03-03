@@ -6,6 +6,8 @@ import datetime as dt
 from dateutil.relativedelta import relativedelta
 from dateutil.parser import parse
 
+import modules.config_details as conf_info
+
 tickers_clothes = [ 'NKE', 'UA', 'ADDYY', 'ADS', 'LULU' ]
 tickers_air = [ 'EZJ', 'RYAAY' ] # Ryanair RYA:LN, RYAAY:US, RYAOF over the counter
 tickers_social = [ 'NFLX', 'FB', 'TWTR', 'ETSY', 'LNKD' ]
@@ -23,7 +25,6 @@ def merge_lists():
   all_tickers = tickers_solid
   return all_tickers
 
-stock_prices_dir = 'data/stock_prices/'
 ratios_dir = 'data/calculated_ratios/'
 
 DATE_FIELD = 'Date'
@@ -45,8 +46,8 @@ def stock_prices_median(date, stock_prices_df, months_delta):
 def pe_calculations(stock_prices_dir, ratios_dir, tickers):
   for ticker in tickers:
     print 'Processing ticker:',ticker
-    stock_price_filename_pre = stock_prices_dir + 'close_prices_pre_2016_02_' + ticker.upper() + '.csv'
-    stock_price_filename_post = stock_prices_dir + 'close_prices_post_2016_02_' + ticker.upper() + '.csv'
+    stock_price_filename_pre = conf_info.stock_prices_dir + conf_info.get_stock_prices_pre_2016_02_filename(ticker)
+    stock_price_filename_post = conf_info.stock_prices_dir + conf_info.get_stock_prices_post_2016_02_filename(ticker)
     eps_filename = ratios_dir + 'eps_' + ticker.upper() + '.csv'
     try:
       # load the EPS data
@@ -78,4 +79,4 @@ def pe_calculations(stock_prices_dir, ratios_dir, tickers):
       print 'Failed to load something about ticker: ' + ticker + ' ~~~', str(e)
 
 
-pe_calculations(stock_prices_dir,ratios_dir,merge_lists())
+pe_calculations(conf_info.stock_prices_dir,ratios_dir,merge_lists())

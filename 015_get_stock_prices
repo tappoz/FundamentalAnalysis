@@ -6,25 +6,26 @@ from dateutil.relativedelta import relativedelta
 import os
 import time
 
+import modules.config_details as conf_info
+
 tickers_clothes = [ 'NKE', 'UA', 'ADDYY', 'ADS', 'LULU' ]
 tickers_air = [ 'EZJ', 'RYAAY' ] # Ryanair RYA:LN, RYAAY:US, RYAOF over the counter
 tickers_social = [ 'NFLX', 'FB', 'TWTR', 'ETSY', 'LNKD' ]
 tickers_factory = [ 'TSLA', 'IMG', 'IFX', 'SIE' ]
 tickers_online_retail = [ 'AMZN', 'EBAY', 'EBA', 'BABA' ]
-tickers_pay = [ 'PYPL', '2PP', 'SQ' ]
+tickers_pay = [ 'PYPL', '2PP', 'SQ', 'VM' ]
 tickers_it = [ 'GOOG', 'GOOGL', 'AAPL', 'TEAM', 'GDDY' ]
 tickers_health = [ 'FIT' ]
 
 # WalMart, Coca-Cola, Genpact, Visa, Boeing, Ford, Goldman Sachs
 tickers_solid=[ 'WMT', 'KO', 'G', 'V', 'BOE', 'F', 'GS' ]
 
-stock_prices_dir = 'data/stock_prices/'
-if not os.path.exists(stock_prices_dir):
-    os.makedirs(stock_prices_dir)
+if not os.path.exists(conf_info.stock_prices_dir):
+    os.makedirs(conf_info.stock_prices_dir)
 
 def merge_lists():
-  # all_tickers = list(set(tickers_clothes)|set(tickers_air)|set(tickers_social)|set(tickers_factory)|set(tickers_online_retail)|set(tickers_pay)|set(tickers_it)|set(tickers_health))
-  all_tickers = tickers_solid
+  all_tickers = list(set(tickers_clothes)|set(tickers_air)|set(tickers_social)|set(tickers_factory)|set(tickers_online_retail)|set(tickers_pay)|set(tickers_it)|set(tickers_health))
+  # all_tickers = tickers_solid
   return all_tickers
 
 def get_before_2016_02(tickers, store_dir):
@@ -33,8 +34,8 @@ def get_before_2016_02(tickers, store_dir):
   CLOSE_FIELD = 'Close'
   ADJUSTED_CLOSE_FIELD = 'Adj Close'
   for ticker in tickers:
-    stock_price_filename = store_dir + 'close_prices_pre_2016_02_' + ticker.upper() + '.csv'
-    print 'Saving to' + stock_price_filename
+    stock_price_filename = store_dir + conf_info.get_stock_prices_pre_2016_02_filename(ticker)
+    print 'Saving to', stock_price_filename
     time.sleep(1)
     try:
       ticker_df = web.DataReader(ticker, 'yahoo', start, end)
@@ -46,14 +47,13 @@ def get_before_2016_02(tickers, store_dir):
 
 
 def get_after_2016_02(tickers, store_dir):
-  # start = now + relativedelta(months=-1)
   start = dt.date(2016,2,1)
   end = dt.date.today()
   CLOSE_FIELD = 'Close'
   ADJUSTED_CLOSE_FIELD = 'Adj Close'
   for ticker in tickers:
-    stock_price_filename = store_dir + 'close_prices_post_2016_02_' + ticker.upper() + '.csv'
-    print 'Saving to' + stock_price_filename
+    stock_price_filename = store_dir + conf_info.get_stock_prices_post_2016_02_filename(ticker)
+    print 'Saving to', stock_price_filename
     time.sleep(1)
     try:
       ticker_df = web.DataReader(ticker, 'yahoo', start, end)
@@ -64,5 +64,5 @@ def get_after_2016_02(tickers, store_dir):
       print 'Failed ticker: ' + ticker + ' ~~~', str(e)
 
 
-# get_before_2016_02(merge_lists(),stock_prices_dir)
-get_after_2016_02(merge_lists(),stock_prices_dir)
+get_before_2016_02(merge_lists(),conf_info.stock_prices_dir)
+get_after_2016_02(merge_lists(),conf_info.stock_prices_dir)

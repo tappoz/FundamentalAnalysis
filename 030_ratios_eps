@@ -5,7 +5,8 @@ import os
 import pandas as pd
 import datetime
 
-fundamentals_dir = 'data/fundamentals/'
+import modules.config_details as conf_info
+
 ratios_dir = 'data/calculated_ratios/'
 
 # ----------------
@@ -70,9 +71,9 @@ def build_all_eps_dataframes(files_dir, ratios_dir):
   if not os.path.exists(ratios_dir):
     os.makedirs(ratios_dir)
   # collecting the data
-  outstanding_shares_dict = build_outstanding_shares_dict(fundamentals_dir)
+  outstanding_shares_dict = build_outstanding_shares_dict(conf_info.fundamentals_dir)
   available_tickers = outstanding_shares_dict.keys()
-  fundamentals_tickers_dict = build_fundamentals_data_dict(fundamentals_dir, available_tickers)
+  fundamentals_tickers_dict = build_fundamentals_data_dict(conf_info.fundamentals_dir, available_tickers)
   # looping on the tickers
   for ticker in available_tickers:
     print str(datetime.datetime.now()) + ' Processing ticker:',ticker
@@ -92,4 +93,4 @@ def build_all_eps_dataframes(files_dir, ratios_dir):
 # tsla_eps_df = build_eps_dataframe(outstanding_shares_dict['TSLA'], fundamentals_tickers_dict['TSLA'])
 # print 'TSLA EPS:', tsla_eps_df
 
-build_all_eps_dataframes(fundamentals_dir, ratios_dir)
+build_all_eps_dataframes(conf_info.fundamentals_dir, ratios_dir)

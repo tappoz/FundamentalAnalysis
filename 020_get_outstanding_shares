@@ -4,6 +4,8 @@ import pandas as pd
 import Quandl
 import stopit
 
+import modules.config_details as conf_info
+
 tickers_clothes = [ 'NKE', 'UA', 'ADDYY', 'ADS', 'LULU' ]
 tickers_air = [ 'EZJ', 'RYAAY' ] # Ryanair RYA:LN, RYAAY:US, RYAOF over the counter
 tickers_social = [ 'NFLX', 'FB', 'TWTR', 'ETSY', 'LNKD' ]
@@ -15,8 +17,6 @@ tickers_health = [ 'FIT' ]
 
 # WalMart, Coca-Cola, Genpact, Visa, Boeing, Ford, Goldman Sachs
 tickers_solid=[ 'WMT', 'KO', 'G', 'V', 'BOE', 'F', 'GS' ]
-
-fundamentals_dir = 'data/fundamentals/'
 
 def merge_lists():
   # all_tickers = list(set(tickers_clothes)|set(tickers_air)|set(tickers_social)|set(tickers_factory)|set(tickers_online_retail)|set(tickers_pay)|set(tickers_it)|set(tickers_health))
@@ -31,7 +31,7 @@ def process_tickers(list, function):
 def outstanding_shares(ticker):
   database_id = 'RAYMOND'
   current_request = database_id + '/' + ticker.upper().strip() + '_TOTAL_COMMON_SHARES_OUTSTANDING_Q'
-  outstanding_shares_filename = fundamentals_dir + 'outstanding_shares_' + database_id + '_' + ticker.upper() + '.csv'
+  outstanding_shares_filename = conf_info.fundamentals_dir + 'outstanding_shares_' + database_id + '_' + ticker.upper() + '.csv'
     
   try:
     print 'Processing ticker ' + ticker

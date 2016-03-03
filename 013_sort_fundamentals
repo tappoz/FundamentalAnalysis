@@ -5,7 +5,7 @@ import os
 import pandas as pd
 import dateutil
 
-fundamentals_dir = 'data/fundamentals/'
+import modules.config_details as conf_info
 
 def sort_dataframe_by_date(df, date_column_name):
   df[date_column_name] = df[date_column_name].apply(dateutil.parser.parse)
@@ -14,13 +14,11 @@ def sort_dataframe_by_date(df, date_column_name):
   df.index = range(0,len(df))
   return df
 
-def sort_fundamentals(files_dir):
+def sort_fundamentals(files_dir, fn_regex, fn_glob):
   END_DATE_COLUMN = 'end_date'
-  filename_glob = 'fundamentals_*.csv'
-  filename_regex = 'fundamentals_(.*).csv'
-  fundamentals_pattern = re.compile(filename_regex)
+  fundamentals_pattern = re.compile(fn_regex)
   for file_name in os.listdir(files_dir):
-    if fnmatch.fnmatch(file_name, filename_glob):
+    if fnmatch.fnmatch(file_name, fn_glob):
       current_ticker = fundamentals_pattern.search(file_name).group(1)
       print 'Processing file:', file_name
       # print 'Processing ticker:', current_ticker
@@ -33,4 +31,4 @@ def sort_fundamentals(files_dir):
       except Exception, e:
         print '~~~ Failed to process fundamentals for ticker: ' + current_ticker + ' ~~~', str(e)
 
-sort_fundamentals(fundamentals_dir)
+sort_fundamentals(conf_info.fundamentals_dir, conf_info.fundamentals_filename_regex, conf_info.fundamentals_filename_glob)
