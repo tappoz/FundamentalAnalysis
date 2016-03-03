@@ -1,24 +1,43 @@
 #!/usr/bin/env bash
 
-tickers_clothes=( 'NKE' 'UA' 'ADDYY' 'ADS' 'LULU' )
-tickers_air=( 'EZJ' 'RYAAY' ) # Ryanair RYA:LN, RYAAY:US, RYAOF over the counter
-tickers_social=( 'NFLX' 'FB' 'TWTR' 'ETSY' 'LNKD' )
-tickers_factory=( 'TSLA' 'IMG' 'IFX' 'SIE' )
-tickers_online_retail=( 'AMZN' 'EBAY' 'EBA' 'BABA' )
-tickers_pay=( 'PYPL' '2PP' 'SQ' )
-tickers_it=( 'GOOG' 'GOOGL' 'AAPL' 'TEAM' 'GDDY' )
-tickers_health=( 'FIT' )
-
-# WalMart, Coca-Cola, Genpact, Visa, Boeing, Ford, Goldman Sachs
-ticker_solid=( 'WMT' 'KO' 'G' 'V' 'BOE' 'F' 'GS' )
-
+CONF_DIR='./data/conf/'
 FUNDAMENTALS_DIR='data/fundamentals/'
 FUNDAMENTALS_LOG_DIR=${FUNDAMENTALS_DIR}'logs/'
 mkdir -p ${FUNDAMENTALS_LOG_DIR}
 
-# for ticker in "${tickers_clothes[@]}" "${tickers_air[@]}" "${tickers_social[@]}" "${tickers_factory[@]}" "${tickers_online_retail[@]}" "${tickers_pay[@]}" "${tickers_it[@]}" "${tickers_health[@]}" 
-for ticker in "${ticker_solid[@]}" 
-do
-  echo "`date +%Y-%m-%d:%H:%M:%S` processing ticker: ${ticker}"
-  pystock-crawler reports ${ticker} -o ${FUNDAMENTALS_DIR}fundamentals_${ticker}.csv -s 20060101 -e 20161231 --sort -l "${FUNDAMENTALS_LOG_DIR}tickers_${ticker}.log"
-done
+stdout_log() {
+  echo "`date +%Y-%m-%d:%H:%M:%S` ${1}"
+}
+
+loop_in_tickers_in_row() {
+  tickers_row=$1
+  stdout_log "Processing tickers '${tickers_row}'"
+  IFS=',' read -ra tickers <<< "$tickers_row"
+  for ticker in "${tickers[@]}"; do
+    stdout_log "Processing current ticker [$ticker]"
+    pystock-crawler reports ${ticker} -o ${FUNDAMENTALS_DIR}fundamentals_${ticker}.csv -s 20060101 -e 20161231 --sort -l "${FUNDAMENTALS_LOG_DIR}tickers_${ticker}.log"
+  done
+}
+
+loop_in_csv_rows() {
+  INPUT=$1
+  OLDIFS=$IFS
+  IFS=:
+  [ ! -f $INPUT ] && { echo "$INPUT file not found"; exit 99; }
+  while read category tickers_row
+  do
+    stdout_log "Processing tickers in category: '${category}'"
+    loop_in_tickers_in_row $tickers_row
+  done < $INPUT
+  IFS=$OLDIFS
+}
+
+loop_on_files_in_directory() {
+  for csv_file in ${CONF_DIR}tickers_*.csv
+  do
+    stdout_log "Reading ${csv_file}"
+    loop_in_csv_rows $csv_file
+  done  
+}
+
+loop_on_files_in_directory
