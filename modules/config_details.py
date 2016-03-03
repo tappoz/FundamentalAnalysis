@@ -11,3 +11,9 @@ def get_stock_prices_pre_2016_02_filename(ticker):
   return stock_prices_ticker_pre_filename_prefix + ticker.upper() + '.csv'
 def get_stock_prices_post_2016_02_filename(ticker):
   return stock_prices_ticker_post_filename_prefix + ticker.upper() + '.csv'
+
+quandl_out_shares_db_id = 'RAYMOND'
+
+def get_quandle_outstanding_shares_filename(ticker):
+  return 'outstanding_shares_' + quandl_out_shares_db_id + '_' + ticker.upper() + '.csv'
+

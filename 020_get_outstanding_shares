@@ -11,7 +11,7 @@ tickers_air = [ 'EZJ', 'RYAAY' ] # Ryanair RYA:LN, RYAAY:US, RYAOF over the coun
 tickers_social = [ 'NFLX', 'FB', 'TWTR', 'ETSY', 'LNKD' ]
 tickers_factory = [ 'TSLA', 'IMG', 'IFX', 'SIE' ]
 tickers_online_retail = [ 'AMZN', 'EBAY', 'EBA', 'BABA' ]
-tickers_pay = [ 'PYPL', '2PP', 'SQ' ]
+tickers_pay = [ 'PYPL', '2PP', 'SQ', 'VM' ]
 tickers_it = [ 'GOOG', 'GOOGL', 'AAPL', 'TEAM', 'GDDY' ]
 tickers_health = [ 'FIT' ]
 
@@ -29,9 +29,8 @@ def process_tickers(list, function):
 
 @stopit.threading_timeoutable(default='not finished')
 def outstanding_shares(ticker):
-  database_id = 'RAYMOND'
-  current_request = database_id + '/' + ticker.upper().strip() + '_TOTAL_COMMON_SHARES_OUTSTANDING_Q'
-  outstanding_shares_filename = conf_info.fundamentals_dir + 'outstanding_shares_' + database_id + '_' + ticker.upper() + '.csv'
+  current_request = conf_info.quandl_out_shares_db_id + '/' + ticker.upper().strip() + '_TOTAL_COMMON_SHARES_OUTSTANDING_Q'
+  outstanding_shares_filename = conf_info.fundamentals_dir + conf_info.get_quandle_outstanding_shares_filename(ticker)
     
   try:
     print 'Processing ticker ' + ticker
