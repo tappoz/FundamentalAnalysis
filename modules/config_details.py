@@ -29,4 +29,9 @@ def get_eps_filename(ticker):
   return 'eps_' + ticker.upper() + '.csv'
 def get_pe_median_filename(ticker):
   return 'pe_median_' + ticker.upper() + '.csv'
+pe_median_filename_glob = 'pe_median_*.csv'
+pe_median_filename_regex = 'pe_median_(.*).csv'
+def get_peg_filename(ticker):
+  return 'peg_' + ticker.upper() + '.csv'
+
 

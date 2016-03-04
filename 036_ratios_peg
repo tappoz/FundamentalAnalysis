@@ -5,7 +5,7 @@ import os
 import pandas as pd
 from dateutil.relativedelta import relativedelta
 
-
+import modules.config_details as conf_info
 calculated_ratios_dir = 'data/calculated_ratios/'
 
 DATE_FORMAT = '%Y-%m-%d'
@@ -14,8 +14,7 @@ EPS_DATE_COLUMN_NAME = 'Date'
 csv_column_dateparse = lambda x: pd.datetime.strptime(x, DATE_FORMAT)
 
 def get_ticker_eps(ticker):
-  file_name_eps = 'eps_' + ticker.upper() + '.csv'
-  eps_df = pd.read_csv(calculated_ratios_dir + file_name_eps, parse_dates=[EPS_DATE_COLUMN_NAME], date_parser=csv_column_dateparse)
+  eps_df = pd.read_csv(conf_info.ratios_dir + conf_info.get_eps_filename(ticker), parse_dates=[EPS_DATE_COLUMN_NAME], date_parser=csv_column_dateparse)
   return eps_df
 
 def calculate_peg_series(eps_df, pe_df):
@@ -47,11 +46,9 @@ def calculate_peg_series(eps_df, pe_df):
   return peg_df
 
 def process_pe_ratios(files_dir):
-  filename_glob = 'pe_median_*.csv'
-  filename_regex = 'pe_median_(.*).csv'
-  pe_median_pattern = re.compile(filename_regex)
+  pe_median_pattern = re.compile(conf_info.pe_median_filename_regex)
   for file_name in os.listdir(files_dir):
-    if fnmatch.fnmatch(file_name, filename_glob):
+    if fnmatch.fnmatch(file_name, conf_info.pe_median_filename_glob):
       current_ticker = pe_median_pattern.search(file_name).group(1)
       print 'Processing P/E file:', file_name, 'for ticker', current_ticker
       current_ticker_eps_df = get_ticker_eps(current_ticker)
@@ -59,9 +56,9 @@ def process_pe_ratios(files_dir):
       
       peg_df = calculate_peg_series(current_ticker_eps_df, current_ticker_pe_median_df)
       
-      current_filename_with_path = calculated_ratios_dir + 'peg_' + current_ticker.upper() + '.csv'
+      current_filename_with_path = conf_info.ratios_dir + conf_info.get_peg_filename(current_ticker)
       print 'Saving PEG series to:', current_filename_with_path
       peg_df.to_csv(current_filename_with_path, index=False)
 
 
-process_pe_ratios(calculated_ratios_dir)
+process_pe_ratios(conf_info.ratios_dir)
