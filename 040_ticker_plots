@@ -113,7 +113,7 @@ def get_plt(dicts, ticker):
   plt.subplots_adjust(left=.16,right=.96,top=.94,bottom=.16,hspace=0)
 
   ticker_fig = plt.gcf() # for "get current figure"
-  ticker_fig.savefig('./graphs/'+ticker+'.png', dpi=300, format='png')
+  ticker_fig.savefig(conf_info.graphs_dir + conf_info.get_tickers_plot_filename(ticker), dpi=300, format='png')
   return plt
 
 

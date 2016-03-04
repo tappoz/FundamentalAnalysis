@@ -4,12 +4,14 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
 
+import modules.config_details as conf_info
+
 dates_formatter = '%Y-%m-%d'
 dateparse = lambda x: pd.datetime.strptime(x, dates_formatter)
 
 def get_series_func(ticker):
-  eps_calculated_df = pd.read_csv('./data/calculated_ratios/eps_'+ticker+'.csv', parse_dates=['Date'], date_parser=dateparse)
-  eps_from_fundamentals_df = pd.read_csv('./data/fundamentals/fundamentals_'+ticker+'.csv', parse_dates=['end_date'], date_parser=dateparse)[['end_date','eps_basic']]
+  eps_calculated_df = pd.read_csv(conf_info.ratios_dir + conf_info.get_eps_filename(ticker), parse_dates=['Date'], date_parser=dateparse)
+  eps_from_fundamentals_df = pd.read_csv(conf_info.fundamentals_dir + conf_info.get_fundamentals_filename(ticker), parse_dates=['end_date'], date_parser=dateparse)[['end_date','eps_basic']]
   return eps_calculated_df, eps_from_fundamentals_df
 
 def plot_axis_with_data(axis, calc_df, fund_df):
@@ -45,10 +47,10 @@ def build_plot(tickers, series_func):
   # store the plots
   plt.subplots_adjust(left=.08,right=.88,hspace=0)
   ticker_fig = plt.gcf() # for "get current figure"
-  ticker_fig.savefig('./graphs/checks_eps.png', dpi=300, format='png')
+  ticker_fig.savefig(conf_info.graphs_dir + 'checks_eps.png', dpi=300, format='png')
   plt.show()
 
 
-build_plot(['AAPL','AMZN','EBAY','GOOG','NFLX','TSLA'],get_series_func)
+build_plot(['AAPL','AMZN','EBAY','GOOG','NFLX','TSLA', 'G'],get_series_func)
 
 

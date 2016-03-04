@@ -38,3 +38,9 @@ eps_filename_prefix = 'eps_'
 pe_median_filename_prefix = 'pe_median_'
 peg_filename_prefix = 'peg_'
 
+# GRAPHS
+
+graphs_dir = './graphs/'
+def get_tickers_plot_filename(ticker):
+  return ticker.upper() + '.png'
+
