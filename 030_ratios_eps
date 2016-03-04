@@ -7,23 +7,18 @@ import datetime
 
 import modules.config_details as conf_info
 
-ratios_dir = 'data/calculated_ratios/'
-
 # ----------------
 # HELPER FUNCTIONS
 # ----------------
 
 def build_outstanding_shares_dict(files_dir):
-  raymond_database_id = 'RAYMOND'
-  filename_glob = 'outstanding_shares_' + raymond_database_id + '_*.csv'
-  filename_regex = raymond_database_id + '_(.*).csv'
-  outstanding_shares_pattern = re.compile(filename_regex)
+  outstanding_shares_pattern = re.compile(conf_info.out_shares_filename_regex)
   outstanding_shares_dict = {}
   for file_name in os.listdir(files_dir):
-    if fnmatch.fnmatch(file_name, filename_glob):
+    if fnmatch.fnmatch(file_name, conf_info.out_shares_filename_glob):
       current_ticker = outstanding_shares_pattern.search(file_name).group(1)
-      # print 'Processing file:', file_name
-      # print 'Processing ticker:', current_ticker
+      print 'Processing file:', file_name
+      print 'Processing ticker:', current_ticker
       outstanding_shares_dict[current_ticker] = pd.read_csv(files_dir + file_name)
 
   return outstanding_shares_dict
@@ -31,7 +26,7 @@ def build_outstanding_shares_dict(files_dir):
 def build_fundamentals_data_dict(files_dir, tickers):
   fundamentals_dict = {}
   for ticker in tickers:
-    fundamentals_ticker_filename_and_path = files_dir + 'fundamentals_' + ticker + '.csv'
+    fundamentals_ticker_filename_and_path = files_dir + conf_info.get_fundamentals_filename(ticker)
     # print fundamentals_ticker_filename_and_path
     fundamentals_dict[ticker] = pd.read_csv(fundamentals_ticker_filename_and_path)
 
@@ -66,10 +61,10 @@ def build_eps_dataframe(outstanding_shares_df, fundamentals_df):
 
   return eps_df
 
-def build_all_eps_dataframes(files_dir, ratios_dir):
+def build_all_eps_dataframes(files_dir, ratios_storage_dir):
   # making sure the folder exists
-  if not os.path.exists(ratios_dir):
-    os.makedirs(ratios_dir)
+  if not os.path.exists(ratios_storage_dir):
+    os.makedirs(ratios_storage_dir)
   # collecting the data
   outstanding_shares_dict = build_outstanding_shares_dict(conf_info.fundamentals_dir)
   available_tickers = outstanding_shares_dict.keys()
@@ -79,7 +74,7 @@ def build_all_eps_dataframes(files_dir, ratios_dir):
     print str(datetime.datetime.now()) + ' Processing ticker:',ticker
     current_eps_df = build_eps_dataframe(outstanding_shares_dict[ticker], fundamentals_tickers_dict[ticker])
     # saving the EPS df as CSV file
-    current_filename_with_path = ratios_dir + 'eps_' + ticker.upper() + '.csv'
+    current_filename_with_path = ratios_storage_dir + conf_info.get_eps_filename(ticker)
     current_eps_df.to_csv(current_filename_with_path, index=False)
 
 # ----------
@@ -93,4 +88,4 @@ def build_all_eps_dataframes(files_dir, ratios_dir):
 # tsla_eps_df = build_eps_dataframe(outstanding_shares_dict['TSLA'], fundamentals_tickers_dict['TSLA'])
 # print 'TSLA EPS:', tsla_eps_df
 
-build_all_eps_dataframes(conf_info.fundamentals_dir, ratios_dir)
+build_all_eps_dataframes(conf_info.fundamentals_dir, conf_info.ratios_dir)
