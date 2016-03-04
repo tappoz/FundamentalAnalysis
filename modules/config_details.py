@@ -27,4 +27,6 @@ out_shares_filename_regex = 'outstanding_shares_' + quandl_out_shares_db_id + '_
 ratios_dir = 'data/calculated_ratios/'
 def get_eps_filename(ticker):
   return 'eps_' + ticker.upper() + '.csv'
+def get_pe_median_filename(ticker):
+  return 'pe_median_' + ticker.upper() + '.csv'
 

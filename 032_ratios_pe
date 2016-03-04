@@ -21,11 +21,9 @@ tickers_health = [ 'FIT' ]
 tickers_solid=[ 'WMT', 'KO', 'G', 'V', 'BOE', 'F', 'GS' ]
 
 def merge_lists():
-  # all_tickers = list(set(tickers_clothes)|set(tickers_air)|set(tickers_social)|set(tickers_factory)|set(tickers_online_retail)|set(tickers_pay)|set(tickers_it)|set(tickers_health))
-  all_tickers = tickers_solid
+  all_tickers = list(set(tickers_clothes)|set(tickers_air)|set(tickers_social)|set(tickers_factory)|set(tickers_online_retail)|set(tickers_pay)|set(tickers_it)|set(tickers_health))
+  # all_tickers = tickers_solid
   return all_tickers
-
-ratios_dir = 'data/calculated_ratios/'
 
 DATE_FIELD = 'Date'
 DATE_FORMAT = '%Y-%m-%d'
@@ -43,12 +41,12 @@ def stock_prices_median(date, stock_prices_df, months_delta):
   # print 'median?', median
   return median
 
-def pe_calculations(stock_prices_dir, ratios_dir, tickers):
+def pe_calculations(stock_prices_dir, input_ratios_dir, tickers):
   for ticker in tickers:
     print 'Processing ticker:',ticker
     stock_price_filename_pre = conf_info.stock_prices_dir + conf_info.get_stock_prices_pre_2016_02_filename(ticker)
     stock_price_filename_post = conf_info.stock_prices_dir + conf_info.get_stock_prices_post_2016_02_filename(ticker)
-    eps_filename = ratios_dir + 'eps_' + ticker.upper() + '.csv'
+    eps_filename = input_ratios_dir + conf_info.get_eps_filename(ticker)
     try:
       # load the EPS data
       eps_df = pd.read_csv(eps_filename)
@@ -72,11 +70,11 @@ def pe_calculations(stock_prices_dir, ratios_dir, tickers):
 
       # store the P/E median (last 2 months) dataframe
       # print pe_median_df
-      current_filename_with_path = ratios_dir + 'pe_median_' + ticker.upper() + '.csv'
+      current_filename_with_path = input_ratios_dir + conf_info.get_pe_median_filename(ticker)
       pe_median_df.to_csv(current_filename_with_path, index=False)
 
     except Exception, e:
       print 'Failed to load something about ticker: ' + ticker + ' ~~~', str(e)
 
 
-pe_calculations(conf_info.stock_prices_dir,ratios_dir,merge_lists())
+pe_calculations(conf_info.stock_prices_dir,conf_info.ratios_dir,merge_lists())
