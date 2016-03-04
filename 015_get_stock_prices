@@ -8,6 +8,7 @@ import time
 
 import modules.config_details as conf_info
 
+# TODO REMOVE THE FOLLOWING TICKERS, LOAD THEM FROM THE CSV FILES INSTEAD
 tickers_clothes = [ 'NKE', 'UA', 'ADDYY', 'ADS', 'LULU' ]
 tickers_air = [ 'EZJ', 'RYAAY' ] # Ryanair RYA:LN, RYAAY:US, RYAOF over the counter
 tickers_social = [ 'NFLX', 'FB', 'TWTR', 'ETSY', 'LNKD' ]
@@ -16,17 +17,46 @@ tickers_online_retail = [ 'AMZN', 'EBAY', 'EBA', 'BABA' ]
 tickers_pay = [ 'PYPL', '2PP', 'SQ', 'VM' ]
 tickers_it = [ 'GOOG', 'GOOGL', 'AAPL', 'TEAM', 'GDDY' ]
 tickers_health = [ 'FIT' ]
-
 # WalMart, Coca-Cola, Genpact, Visa, Boeing, Ford, Goldman Sachs
 tickers_solid=[ 'WMT', 'KO', 'G', 'V', 'BOE', 'F', 'GS' ]
-
-if not os.path.exists(conf_info.stock_prices_dir):
-    os.makedirs(conf_info.stock_prices_dir)
-
 def merge_lists():
   all_tickers = list(set(tickers_clothes)|set(tickers_air)|set(tickers_social)|set(tickers_factory)|set(tickers_online_retail)|set(tickers_pay)|set(tickers_it)|set(tickers_health))
   # all_tickers = tickers_solid
   return all_tickers
+
+##########################################################################
+##########################################################################
+# import os
+import glob
+
+def process_tickers_lists_csv_files():
+  all_tickers_all_files = []
+  for file in glob.glob('./data/conf/tickers_*.csv'):
+    print 'Found this:', file
+    tickers_to_process = get_tickers_from_csv_file(file)
+    print '  >>> Found tickers:', tickers_to_process
+    all_tickers_all_files.extend(tickers_to_process)
+  print 'ALL OF ALL:', all_tickers_all_files
+
+import csv
+def get_tickers_from_csv_file(filename):
+  all_tickers_for_file = []
+  with open(filename, 'rb') as csvfile:
+    dialect = csv.Sniffer().sniff(csvfile.read(), delimiters=':')
+    csvfile.seek(0)
+    reader = csv.reader(csvfile, dialect)
+    for row in reader:
+        print '  Current row:', '_SEPARATOR_'.join(row)
+        current_tickers = row[1].split(',')
+        print '  Tickers:', current_tickers
+        all_tickers_for_file.extend(current_tickers)
+  return all_tickers_for_file
+
+##########################################################################
+##########################################################################
+
+if not os.path.exists(conf_info.stock_prices_dir):
+    os.makedirs(conf_info.stock_prices_dir)
 
 def get_before_2016_02(tickers, store_dir):
   start = dt.date(2009,1,1)
@@ -64,5 +94,9 @@ def get_after_2016_02(tickers, store_dir):
       print 'Failed ticker: ' + ticker + ' ~~~', str(e)
 
 
-get_before_2016_02(merge_lists(),conf_info.stock_prices_dir)
-get_after_2016_02(merge_lists(),conf_info.stock_prices_dir)
+# TODO RE ENABLE THESE
+# get_before_2016_02(merge_lists(),conf_info.stock_prices_dir)
+# get_after_2016_02(merge_lists(),conf_info.stock_prices_dir)
+
+process_tickers_lists_csv_files()
+
