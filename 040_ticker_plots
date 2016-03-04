@@ -41,7 +41,7 @@ def build_plot(cur_dict, ticker, num_rows_num_cols_tuple, shared_axis):
 
 
 eps_dict = {
-  'path_prefixes'    : './data/calculated_ratios/eps_', 
+  'path_prefixes'    : conf_info.ratios_dir + conf_info.eps_filename_prefix, 
   'date_field_name'  : 'Date', 
   'value_field_name' : 'EPS', 
   'y_label'          : 'EPS', 
@@ -49,7 +49,7 @@ eps_dict = {
   'rowspan'          : 1
 }
 peg_dict = {
-  'path_prefixes'    : './data/calculated_ratios/peg_', 
+  'path_prefixes'    : conf_info.ratios_dir + conf_info.peg_filename_prefix, 
   'date_field_name'  : 'Date', 
   'value_field_name' : 'PEG', 
   'y_label'          : 'PEG', 
@@ -57,7 +57,7 @@ peg_dict = {
   'rowspan'          : 1
 }
 pe_median_dict = {
-  'path_prefixes'    : './data/calculated_ratios/pe_median_', 
+  'path_prefixes'    : conf_info.ratios_dir + conf_info.pe_median_filename_prefix, 
   'date_field_name'  : 'Date', 
   'value_field_name' : 'PE_median', 
   'y_label'          : 'P/E', 
@@ -65,7 +65,7 @@ pe_median_dict = {
   'rowspan'          : 1
 }
 outstanding_shares_dict = {
-  'path_prefixes'    : conf_info.fundamentals_dir + 'outstanding_shares_RAYMOND_', 
+  'path_prefixes'    : conf_info.fundamentals_dir + conf_info.out_shares_filename_prefix, 
   'date_field_name'  : 'Date', 
   'value_field_name' : 'Value', 
   'y_label'          : 'Outstanding \n shares', 

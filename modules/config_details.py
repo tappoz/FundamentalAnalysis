@@ -21,6 +21,7 @@ def get_quandle_outstanding_shares_filename(ticker):
   return 'outstanding_shares_' + quandl_out_shares_db_id + '_' + ticker.upper() + '.csv'
 out_shares_filename_glob = 'outstanding_shares_' + quandl_out_shares_db_id + '_*.csv'
 out_shares_filename_regex = 'outstanding_shares_' + quandl_out_shares_db_id + '_(.*).csv'
+out_shares_filename_prefix = 'outstanding_shares_' + quandl_out_shares_db_id + '_'
 
 # RATIOS CALCULATION
 
@@ -33,5 +34,7 @@ pe_median_filename_glob = 'pe_median_*.csv'
 pe_median_filename_regex = 'pe_median_(.*).csv'
 def get_peg_filename(ticker):
   return 'peg_' + ticker.upper() + '.csv'
-
+eps_filename_prefix = 'eps_'
+pe_median_filename_prefix = 'pe_median_'
+peg_filename_prefix = 'peg_'
 
