@@ -5,23 +5,7 @@ import Quandl
 import stopit
 
 import modules.config_details as conf_info
-
-tickers_clothes = [ 'NKE', 'UA', 'ADDYY', 'ADS', 'LULU' ]
-tickers_air = [ 'EZJ', 'RYAAY' ] # Ryanair RYA:LN, RYAAY:US, RYAOF over the counter
-tickers_social = [ 'NFLX', 'FB', 'TWTR', 'ETSY', 'LNKD' ]
-tickers_factory = [ 'TSLA', 'IMG', 'IFX', 'SIE' ]
-tickers_online_retail = [ 'AMZN', 'EBAY', 'EBA', 'BABA' ]
-tickers_pay = [ 'PYPL', '2PP', 'SQ', 'VM' ]
-tickers_it = [ 'GOOG', 'GOOGL', 'AAPL', 'TEAM', 'GDDY' ]
-tickers_health = [ 'FIT' ]
-
-# WalMart, Coca-Cola, Genpact, Visa, Boeing, Ford, Goldman Sachs
-tickers_solid=[ 'WMT', 'KO', 'G', 'V', 'BOE', 'F', 'GS' ]
-
-def merge_lists():
-  # all_tickers = list(set(tickers_clothes)|set(tickers_air)|set(tickers_social)|set(tickers_factory)|set(tickers_online_retail)|set(tickers_pay)|set(tickers_it)|set(tickers_health))
-  all_tickers = tickers_solid
-  return all_tickers
+import modules.tickers_helpers as helpers
 
 def process_tickers(list, function):
   for ticker in list:
@@ -40,5 +24,4 @@ def outstanding_shares(ticker):
   except Exception, e:
     print '~~~ Failed ticker: ' + ticker + ' ~~~', str(e)
 
-
-process_tickers(merge_lists(),outstanding_shares)
+process_tickers(helpers.get_all_tickers_lists_csv_files(),outstanding_shares)
