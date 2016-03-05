@@ -7,6 +7,7 @@ import os
 import time
 
 import modules.config_details as conf_info
+import modules.tickers_helpers as helpers
 
 # TODO REMOVE THE FOLLOWING TICKERS, LOAD THEM FROM THE CSV FILES INSTEAD
 tickers_clothes = [ 'NKE', 'UA', 'ADDYY', 'ADS', 'LULU' ]
@@ -26,31 +27,6 @@ def merge_lists():
 
 ##########################################################################
 ##########################################################################
-# import os
-import glob
-
-def process_tickers_lists_csv_files():
-  all_tickers_all_files = []
-  for file in glob.glob('./data/conf/tickers_*.csv'):
-    print 'Found this:', file
-    tickers_to_process = get_tickers_from_csv_file(file)
-    print '  >>> Found tickers:', tickers_to_process
-    all_tickers_all_files.extend(tickers_to_process)
-  print 'ALL OF ALL:', all_tickers_all_files
-
-import csv
-def get_tickers_from_csv_file(filename):
-  all_tickers_for_file = []
-  with open(filename, 'rb') as csvfile:
-    dialect = csv.Sniffer().sniff(csvfile.read(), delimiters=':')
-    csvfile.seek(0)
-    reader = csv.reader(csvfile, dialect)
-    for row in reader:
-        print '  Current row:', '_SEPARATOR_'.join(row)
-        current_tickers = row[1].split(',')
-        print '  Tickers:', current_tickers
-        all_tickers_for_file.extend(current_tickers)
-  return all_tickers_for_file
 
 ##########################################################################
 ##########################################################################
@@ -98,5 +74,5 @@ def get_after_2016_02(tickers, store_dir):
 # get_before_2016_02(merge_lists(),conf_info.stock_prices_dir)
 # get_after_2016_02(merge_lists(),conf_info.stock_prices_dir)
 
-process_tickers_lists_csv_files()
+print helpers.get_all_tickers_lists_csv_files()
 
