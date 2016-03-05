@@ -9,28 +9,6 @@ import time
 import modules.config_details as conf_info
 import modules.tickers_helpers as helpers
 
-# TODO REMOVE THE FOLLOWING TICKERS, LOAD THEM FROM THE CSV FILES INSTEAD
-tickers_clothes = [ 'NKE', 'UA', 'ADDYY', 'ADS', 'LULU' ]
-tickers_air = [ 'EZJ', 'RYAAY' ] # Ryanair RYA:LN, RYAAY:US, RYAOF over the counter
-tickers_social = [ 'NFLX', 'FB', 'TWTR', 'ETSY', 'LNKD' ]
-tickers_factory = [ 'TSLA', 'IMG', 'IFX', 'SIE' ]
-tickers_online_retail = [ 'AMZN', 'EBAY', 'EBA', 'BABA' ]
-tickers_pay = [ 'PYPL', '2PP', 'SQ', 'VM' ]
-tickers_it = [ 'GOOG', 'GOOGL', 'AAPL', 'TEAM', 'GDDY' ]
-tickers_health = [ 'FIT' ]
-# WalMart, Coca-Cola, Genpact, Visa, Boeing, Ford, Goldman Sachs
-tickers_solid=[ 'WMT', 'KO', 'G', 'V', 'BOE', 'F', 'GS' ]
-def merge_lists():
-  all_tickers = list(set(tickers_clothes)|set(tickers_air)|set(tickers_social)|set(tickers_factory)|set(tickers_online_retail)|set(tickers_pay)|set(tickers_it)|set(tickers_health))
-  # all_tickers = tickers_solid
-  return all_tickers
-
-##########################################################################
-##########################################################################
-
-##########################################################################
-##########################################################################
-
 if not os.path.exists(conf_info.stock_prices_dir):
     os.makedirs(conf_info.stock_prices_dir)
 
@@ -70,9 +48,5 @@ def get_after_2016_02(tickers, store_dir):
       print 'Failed ticker: ' + ticker + ' ~~~', str(e)
 
 
-# TODO RE ENABLE THESE
-# get_before_2016_02(merge_lists(),conf_info.stock_prices_dir)
-# get_after_2016_02(merge_lists(),conf_info.stock_prices_dir)
-
-print helpers.get_all_tickers_lists_csv_files()
-
+# get_before_2016_02(helpers.get_all_tickers_lists_csv_files(),conf_info.stock_prices_dir)
+get_after_2016_02(helpers.get_all_tickers_lists_csv_files(),conf_info.stock_prices_dir)
