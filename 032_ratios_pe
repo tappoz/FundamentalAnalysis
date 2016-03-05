@@ -7,23 +7,7 @@ from dateutil.relativedelta import relativedelta
 from dateutil.parser import parse
 
 import modules.config_details as conf_info
-
-tickers_clothes = [ 'NKE', 'UA', 'ADDYY', 'ADS', 'LULU' ]
-tickers_air = [ 'EZJ', 'RYAAY' ] # Ryanair RYA:LN, RYAAY:US, RYAOF over the counter
-tickers_social = [ 'NFLX', 'FB', 'TWTR', 'ETSY', 'LNKD' ]
-tickers_factory = [ 'TSLA', 'IMG', 'IFX', 'SIE' ]
-tickers_online_retail = [ 'AMZN', 'EBAY', 'EBA', 'BABA' ]
-tickers_pay = [ 'PYPL', '2PP', 'SQ' ]
-tickers_it = [ 'GOOG', 'GOOGL', 'AAPL', 'TEAM', 'GDDY' ]
-tickers_health = [ 'FIT' ]
-
-# WalMart, Coca-Cola, Genpact, Visa, Boeing, Ford, Goldman Sachs
-tickers_solid=[ 'WMT', 'KO', 'G', 'V', 'BOE', 'F', 'GS' ]
-
-def merge_lists():
-  all_tickers = list(set(tickers_clothes)|set(tickers_air)|set(tickers_social)|set(tickers_factory)|set(tickers_online_retail)|set(tickers_pay)|set(tickers_it)|set(tickers_health))
-  # all_tickers = tickers_solid
-  return all_tickers
+import modules.tickers_helpers as helpers
 
 DATE_FIELD = 'Date'
 DATE_FORMAT = '%Y-%m-%d'
@@ -77,4 +61,4 @@ def pe_calculations(stock_prices_dir, input_ratios_dir, tickers):
       print 'Failed to load something about ticker: ' + ticker + ' ~~~', str(e)
 
 
-pe_calculations(conf_info.stock_prices_dir,conf_info.ratios_dir,merge_lists())
+pe_calculations(conf_info.stock_prices_dir,conf_info.ratios_dir,helpers.get_all_tickers_lists_csv_files())

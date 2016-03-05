@@ -6,7 +6,6 @@ import pandas as pd
 from dateutil.relativedelta import relativedelta
 
 import modules.config_details as conf_info
-calculated_ratios_dir = 'data/calculated_ratios/'
 
 DATE_FORMAT = '%Y-%m-%d'
 PE_DATE_COLUMN_NAME = 'Date'

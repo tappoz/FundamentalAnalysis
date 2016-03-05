@@ -7,6 +7,7 @@ import matplotlib.ticker as mticker
 import pandas as pd
 
 import modules.config_details as conf_info
+import modules.tickers_helpers as helpers
 
 dates_formatter = '%Y-%m-%d'
 dateparse = lambda x: pd.datetime.strptime(x, dates_formatter)
@@ -117,24 +118,6 @@ def get_plt(dicts, ticker):
   return plt
 
 
-tickers_clothes = [ 'NKE', 'UA', 'ADDYY', 'ADS', 'LULU' ]
-tickers_air = [ 'EZJ', 'RYAAY' ] # Ryanair RYA:LN, RYAAY:US, RYAOF over the counter
-tickers_social = [ 'NFLX', 'FB', 'TWTR', 'ETSY', 'LNKD' ]
-tickers_factory = [ 'TSLA', 'IMG', 'IFX', 'SIE' ]
-tickers_online_retail = [ 'AMZN', 'EBAY', 'EBA', 'BABA' ]
-tickers_pay = [ 'PYPL', '2PP', 'SQ' ]
-tickers_it = [ 'GOOG', 'GOOGL', 'AAPL', 'TEAM', 'GDDY' ]
-tickers_health = [ 'FIT' ]
-
-# WalMart, Coca-Cola, Genpact, Visa, Boeing, Ford, Goldman Sachs
-tickers_solid=[ 'WMT', 'KO', 'G', 'V', 'BOE', 'F', 'GS' ]
-
-
-def merge_lists():
-  # all_tickers = list(set(tickers_clothes)|set(tickers_air)|set(tickers_social)|set(tickers_factory)|set(tickers_online_retail)|set(tickers_pay)|set(tickers_it)|set(tickers_health))
-  all_tickers = tickers_solid
-  return all_tickers
-
 def store_plot(dicts, ticker):
   ticker_plt = get_plt(dicts, ticker)
   # ticker_plt.show()
@@ -149,4 +132,4 @@ def store_plots(dicts, tickers):
     except Exception, e:
       print 'Failed to process ticker: ' + ticker + ' ~~~', str(e)
 
-store_plots(series_dicts, merge_lists())
+store_plots(series_dicts, helpers.get_all_tickers_lists_csv_files())
