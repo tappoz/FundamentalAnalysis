@@ -1,3 +1,8 @@
+Fundamental analysis for stocks and shares
+==========================================
+
+The scripts to process the data rely on pandas, numpy and matplotlib.
+The grapsh, as output of the python scripts are stored in the folder __graphs__.
 
 # Ubuntu installs
 ```
@@ -61,28 +66,12 @@ $ curl -o data/nasdaq_traded.csv ftp://ftp.nasdaqtrader.com/SymbolDirectory/nasd
 cfr.: http://www.quantatrisk.com/2015/06/22/get-list-nasdaq-securities-python-csv/
 
 
-# Financial Fundamentals packages
-
-https://github.com/andrewkittredge/financial_fundamentals
-http://github.com/andrewkittredge/vector_cache
+# Helper packages
 
 ```
-sudo pip2 install git+git://github.com/andrewkittredge/vector_cache.git
-sudo pip2 install FinancialFundamentals
-```
-
-git clone https://github.com/humdings/pynance-legacy
-sudo pip2 install git+git://github.com/humdings/pynance-legacy.git
-
-https://github.com/humdings/yahoo_pynance
-sudo pip2 install git+git://github.com/humdings/yahoo_pynance.git
-git clone https://github.com/humdings/yahoo_pynance.git
-
 $ sudo pip2 install quandlpy
-
-pip2 install requests
+$ sudo pip2 install requests
 $ sudo pip2 install Quandl
-
 $ sudo pip2 install stopit
-
 $ sudo pip2 install pandas-datareader
+```
